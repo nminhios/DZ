@@ -3,605 +3,477 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>nminh ios — Underground Store</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#05060f">
+<title>nminh ios — iOS Underground Store</title>
+<meta name="description" content="nminh ios — Proxy, Cheat Menu, Filza, 3105 IPA. Uy tín, hỗ trợ 24/7.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #03040f;
-  --c1: #38bfff;
-  --c2: #8b5cf6;
-  --c3: #f472b6;
-  --c4: #34d399;
-  --c5: #60a5fa;
-  --text: #e2f0ff;
-  --muted: rgba(180,210,255,0.40);
-  --card-bg: rgba(4,8,28,0.52);
-  --glass: rgba(255,255,255,0.035);
-  --border: rgba(56,191,255,0.14);
+:root{
+  --bg:#05060f;
+  --c1:#38bfff; --c2:#8b5cf6; --c3:#f472b6; --c4:#34d399; --c5:#fbbf24;
+  --text:#eaf3ff; --muted:rgba(190,212,255,.55);
+  --line:rgba(255,255,255,.08);
+  --zalo:#0068ff;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
-body {
-  min-height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: max(env(safe-area-inset-top),28px) 16px max(env(safe-area-inset-bottom),28px);
-  overflow-x: hidden;
-  position: relative;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  min-height:100vh;background:var(--bg);color:var(--text);
+  font-family:'Be Vietnam Pro',system-ui,sans-serif;
+  padding:max(env(safe-area-inset-top),26px) 14px max(env(safe-area-inset-bottom),30px);
+  display:flex;justify-content:center;overflow-x:hidden;position:relative;
+}
+/* ===== BACKGROUND ===== */
+.aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;will-change:transform}
+.b1{width:520px;height:520px;background:#0b4dff;top:-180px;left:-160px;animation:f1 18s ease-in-out infinite alternate}
+.b2{width:480px;height:480px;background:#7a2cff;bottom:-160px;right:-140px;animation:f2 22s ease-in-out infinite alternate}
+.b3{width:340px;height:340px;background:#ff3fa4;top:42%;left:55%;opacity:.28;animation:f3 26s ease-in-out infinite alternate}
+@keyframes f1{to{transform:translate(90px,70px) scale(1.15)}}
+@keyframes f2{to{transform:translate(-80px,-60px) scale(1.1)}}
+@keyframes f3{to{transform:translate(-120px,60px) scale(1.2)}}
+.grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 30%,transparent 80%);
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 30%,transparent 80%)}
+canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ===== WRAP ===== */
+.wrap{position:relative;z-index:2;width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;animation:rise .9s cubic-bezier(.16,1,.3,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.glass{
+  background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.025));
+  border:1px solid var(--line);border-radius:26px;
+  backdrop-filter:blur(26px) saturate(1.6);-webkit-backdrop-filter:blur(26px) saturate(1.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 30px 70px -20px rgba(0,0,0,.7);
 }
 
-/* ─── BG ─── */
-#bg-img {
-  position: fixed; inset: 0; z-index: 0;
-  background: url('https://i.ibb.co/2H62RZw/orbit-silhou.jpg') center/cover no-repeat;
-  filter: blur(14px) brightness(0.22) saturate(1.5);
-  transform: scale(1.1);
-}
-#galaxy {
-  position: fixed; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 100% 70% at 15% 25%, rgba(0,40,140,0.50) 0%, transparent 65%),
-    radial-gradient(ellipse 70% 90% at 85% 75%, rgba(80,0,180,0.38) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,5,30,0.65) 0%, transparent 100%);
-}
-.neb {
-  position: fixed; border-radius: 50%;
-  filter: blur(80px); pointer-events: none; z-index: 0;
-}
-.n1{width:700px;height:700px;background:rgba(0,80,200,0.10);top:-250px;left:-250px;animation:nd1 20s ease-in-out infinite alternate;}
-.n2{width:600px;height:600px;background:rgba(100,0,220,0.09);bottom:-200px;right:-200px;animation:nd2 17s ease-in-out infinite alternate;}
-.n3{width:450px;height:450px;background:rgba(0,180,255,0.07);top:35%;left:50%;transform:translate(-50%,-50%);animation:nd3 23s ease-in-out infinite alternate;}
-@keyframes nd1{to{transform:translate(60px,45px)scale(1.12);}}
-@keyframes nd2{to{transform:translate(-45px,-35px)scale(1.10);}}
-@keyframes nd3{to{transform:translate(-50%,-50%)translate(40px,-30px)scale(1.06);}}
-
-canvas#s { position:fixed;inset:0;z-index:0;pointer-events:none; }
-#scan {
-  position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(56,191,255,0.012) 2px,rgba(56,191,255,0.012) 4px);
-  animation:scanmove 40s linear infinite;
-}
-@keyframes scanmove{to{background-position:0 200px;}}
-
-/* ─── CARD ─── */
-.card {
-  position:relative; z-index:2;
-  width:100%; max-width:460px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 28px;
-  padding: 48px 40px 44px;
-  backdrop-filter: blur(72px) saturate(2) brightness(1.08);
-  -webkit-backdrop-filter: blur(72px) saturate(2) brightness(1.08);
-  box-shadow:
-    0 0 0 1px rgba(56,191,255,0.07),
-    inset 0 1px 0 rgba(255,255,255,0.06),
-    inset 0 0 80px rgba(0,40,120,0.06),
-    0 40px 100px rgba(0,0,0,0.75),
-    0 0 100px rgba(0,80,200,0.08);
-  text-align: center;
-  animation: cardin 1s cubic-bezier(0.16,1,0.3,1) both;
-}
-@keyframes cardin{from{opacity:0;transform:translateY(44px)scale(0.95);}to{opacity:1;transform:none;}}
-
-/* corner brackets */
-.c{position:absolute;width:24px;height:24px;}
-.c.tl{top:16px;left:16px;border-top:1.5px solid rgba(56,191,255,0.5);border-left:1.5px solid rgba(56,191,255,0.5);border-radius:5px 0 0 0;}
-.c.tr{top:16px;right:16px;border-top:1.5px solid rgba(56,191,255,0.5);border-right:1.5px solid rgba(56,191,255,0.5);border-radius:0 5px 0 0;}
-.c.bl{bottom:16px;left:16px;border-bottom:1.5px solid rgba(56,191,255,0.5);border-left:1.5px solid rgba(56,191,255,0.5);border-radius:0 0 0 5px;}
-.c.br{bottom:16px;right:16px;border-bottom:1.5px solid rgba(56,191,255,0.5);border-right:1.5px solid rgba(56,191,255,0.5);border-radius:0 0 5px 0;}
-
-/* ─── AVATAR ─── */
-.av-zone{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:28px;}
-.ring{position:absolute;border-radius:50%;pointer-events:none;}
-.ring1{inset:-32px;border:1.5px solid rgba(56,191,255,0.18);animation:spin1 22s linear infinite;}
-.ring1::before,.ring1::after{content:'';position:absolute;border-radius:50%;}
-.ring1::before{width:9px;height:9px;background:var(--c1);box-shadow:0 0 14px var(--c1),0 0 28px var(--c1);top:-4.5px;left:50%;transform:translateX(-50%);}
-.ring1::after{width:6px;height:6px;background:var(--c3);box-shadow:0 0 10px var(--c3);bottom:-3px;left:50%;transform:translateX(-50%);}
-.ring2{inset:-50px;border:1px dashed rgba(139,92,246,0.18);animation:spin1 35s linear infinite reverse;}
-.ring2::before{content:'';position:absolute;border-radius:50%;width:7px;height:7px;background:var(--c2);box-shadow:0 0 12px var(--c2);top:28%;right:-3.5px;}
-.ring3{inset:-16px;border:1px solid rgba(52,211,153,0.14);animation:spin1 11s linear infinite;}
-.ring3::before{content:'';position:absolute;border-radius:50%;width:5px;height:5px;background:var(--c4);box-shadow:0 0 8px var(--c4);bottom:-2.5px;right:18px;}
-@keyframes spin1{to{transform:rotate(360deg);}}
-
-.av-frame{
-  position:relative;z-index:1;
-  width:124px;height:124px;border-radius:50%;
-  padding:3px;
+/* ===== HERO ===== */
+.hero{padding:34px 24px 26px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;width:300px;height:200px;transform:translateX(-50%);
+  background:radial-gradient(closest-side,rgba(56,191,255,.28),transparent);pointer-events:none}
+.av{position:relative;width:112px;height:112px;margin:0 auto 18px}
+.av-ring{position:absolute;inset:-6px;border-radius:50%;
   background:conic-gradient(from 0deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c1));
-  animation:chroma 5s linear infinite;
-}
-@keyframes chroma{to{filter:hue-rotate(360deg);}}
-.av-frame::after{
-  content:'';position:absolute;inset:-8px;border-radius:50%;
-  background:conic-gradient(from 0deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c1));
-  filter:blur(18px);opacity:0;z-index:-1;
-  animation:chroma 5s linear infinite,avpulse 3s ease-in-out infinite alternate;
-}
-@keyframes avpulse{from{opacity:0.18;transform:scale(0.96);}to{opacity:0.5;transform:scale(1.06);}}
-.av-img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:4px solid var(--bg);display:block;}
-.av-img.err{display:none;}
+  animation:spin 6s linear infinite;filter:blur(.3px)}
+.av-ring::after{content:'';position:absolute;inset:-8px;border-radius:50%;background:inherit;filter:blur(18px);opacity:.55;z-index:-1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.av-in{position:absolute;inset:0;border-radius:50%;background:var(--bg);padding:4px;z-index:1}
+.av-in img,.av-fb{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.av-fb{display:none;align-items:center;justify-content:center;font:900 40px 'Orbitron',sans-serif;
+  background:linear-gradient(135deg,var(--c1),var(--c2));color:#05060f}
+.live{position:absolute;right:-4px;bottom:4px;z-index:3;display:flex;align-items:center;gap:5px;
+  padding:4px 10px 4px 8px;border-radius:99px;background:rgba(5,8,22,.9);
+  border:1px solid rgba(52,211,153,.4);font-size:9px;font-weight:700;letter-spacing:1.2px;color:var(--c4)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--c4);box-shadow:0 0 0 0 rgba(52,211,153,.7);animation:ping 1.8s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
 
-.badge{
-  position:absolute;bottom:4px;right:4px;z-index:3;
-  display:flex;align-items:center;gap:5px;
-  background:rgba(3,6,24,0.82);
-  border:1px solid rgba(52,211,153,0.32);
-  border-radius:20px;padding:3px 9px 3px 6px;
-  backdrop-filter:blur(12px);
-}
-.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--c4);box-shadow:0 0 8px var(--c4);animation:bpulse 2.2s ease-in-out infinite;flex-shrink:0;}
-@keyframes bpulse{0%,100%{box-shadow:0 0 4px var(--c4);}50%{box-shadow:0 0 16px var(--c4),0 0 24px var(--c4);}}
-.badge-txt{font-size:8px;font-weight:700;letter-spacing:1px;color:var(--c4);text-transform:uppercase;}
+.name{display:inline-flex;align-items:center;gap:8px;font:900 40px/1 'Orbitron',sans-serif;letter-spacing:1.5px;
+  background:linear-gradient(120deg,#fff 0%,var(--c1) 38%,var(--c2) 70%,var(--c3) 100%);background-size:240% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shift 6s ease-in-out infinite}
+@keyframes shift{50%{background-position:100% 0}}
+.verify{width:24px;height:24px;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(56,191,255,.7))}
+.handle{margin-top:8px;font-size:12px;color:var(--muted);letter-spacing:.4px}
+.type{margin:14px auto 0;min-height:22px;font-size:13px;color:#cfe3ff;font-weight:400}
+.caret{display:inline-block;width:2px;height:1em;background:var(--c1);margin-left:3px;vertical-align:-2px;animation:blink 1s steps(1) infinite;box-shadow:0 0 8px var(--c1)}
+@keyframes blink{50%{opacity:0}}
 
-/* ─── NAME ─── */
-.name-wrap{margin-bottom:8px;}
-.name{
-  font-family:'Orbitron',sans-serif;
-  font-size:48px;font-weight:900;letter-spacing:2px;line-height:1;
-  background:linear-gradient(130deg,#ffffff 0%,var(--c1) 40%,var(--c2) 70%,var(--c4) 100%);
-  background-size:280% 100%;
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:nameshift 5s ease-in-out infinite;
-  display:inline-block;cursor:default;user-select:none;
-}
-@keyframes nameshift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
-.name-line{
-  display:block;height:1.5px;
-  background:linear-gradient(90deg,transparent,var(--c1),var(--c2),var(--c4),transparent);
-  border-radius:2px;margin:7px auto 0;width:0%;
-  animation:lgrow 1.6s 0.9s cubic-bezier(0.16,1,0.3,1) forwards;
-  box-shadow:0 0 14px var(--c1);
-}
-@keyframes lgrow{to{width:85%;}}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:18px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;font-size:10.5px;font-weight:600;
+  color:var(--cc);background:color-mix(in srgb,var(--cc) 10%,transparent);border:1px solid color-mix(in srgb,var(--cc) 28%,transparent)}
+.chip svg{width:12px;height:12px}
 
-/* ─── TAGLINE ─── */
-.tagline{
-  font-size:12px;font-weight:300;color:var(--muted);
-  line-height:1.9;max-width:270px;margin:14px auto 28px;
-  letter-spacing:0.15px;
-}
-.cursor-blink{
-  display:inline-block;width:1.5px;height:0.9em;
-  background:var(--c1);vertical-align:middle;margin-left:2px;
-  animation:cblink 1s step-start infinite;box-shadow:0 0 6px var(--c1);
-}
-@keyframes cblink{0%,100%{opacity:1;}50%{opacity:0;}}
+/* ===== STATS ===== */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:22px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(0,0,0,.2)}
+.stat{padding:14px 6px}
+.stat+.stat{border-left:1px solid var(--line)}
+.stat b{display:block;font:800 20px 'Orbitron',sans-serif;color:#fff;text-shadow:0 0 16px rgba(56,191,255,.6)}
+.stat span{display:block;margin-top:5px;font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
 
-/* ─── TAGS ─── */
-.tags{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-bottom:24px;}
-.tag{
-  font-size:9px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;
-  padding:5px 13px;border-radius:100px;border:1px solid;
-  position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;cursor:default;
-  white-space:nowrap;
-}
-.tag:hover{transform:translateY(-2px);}
-.tag::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.09),transparent);
-  transform:translateX(-100%);transition:transform 0.55s;
-}
-.tag:hover::before{transform:translateX(100%);}
-.tb{color:var(--c1);border-color:rgba(56,191,255,0.30);background:rgba(56,191,255,0.07);}
-.tp{color:var(--c2);border-color:rgba(139,92,246,0.30);background:rgba(139,92,246,0.07);}
-.tk{color:var(--c3);border-color:rgba(244,114,182,0.30);background:rgba(244,114,182,0.07);}
-.tg{color:var(--c4);border-color:rgba(52,211,153,0.30);background:rgba(52,211,153,0.07);}
-.tb:hover{box-shadow:0 0 18px rgba(56,191,255,0.30);}
-.tp:hover{box-shadow:0 0 18px rgba(139,92,246,0.30);}
-.tk:hover{box-shadow:0 0 18px rgba(244,114,182,0.30);}
-.tg:hover{box-shadow:0 0 18px rgba(52,211,153,0.30);}
+/* ===== SECTION ===== */
+.sec{padding:20px 16px 16px}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin:0 6px 14px}
+.sec-t{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:rgba(190,225,255,.85)}
+.sec-t::before{content:'';width:18px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--c1),var(--c2))}
+.sec-c{font-size:10.5px;color:var(--muted)}
 
-/* ─── PRODUCTS ─── */
-.section-label{
-  font-size:8.5px;font-weight:700;letter-spacing:2.5px;
-  color:rgba(56,191,255,0.50);text-transform:uppercase;
-  margin-bottom:14px;display:block;
-}
-.products{display:flex;flex-direction:column;gap:10px;margin-bottom:26px;}
-.prod{
-  display:flex;align-items:center;gap:14px;
-  padding:14px 16px;border-radius:16px;
-  background:rgba(56,191,255,0.04);
-  border:1px solid rgba(56,191,255,0.09);
-  transition:background 0.2s,border-color 0.2s,transform 0.2s;
-  cursor:default;
-  backdrop-filter:blur(12px);
-}
-.prod:hover{
-  background:rgba(56,191,255,0.08);
-  border-color:rgba(56,191,255,0.18);
-  transform:translateX(4px);
-}
-.prod-icon{
-  width:40px;height:40px;border-radius:11px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.07);
-}
-.prod-info{flex:1;text-align:left;min-width:0;}
-.prod-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.prod-sub{font-size:10px;color:var(--muted);margin-top:2px;font-weight:400;}
-.prod-price{
-  font-family:'Orbitron',sans-serif;
-  font-size:11px;font-weight:700;
-  color:var(--c1);text-align:right;flex-shrink:0;
-  text-shadow:0 0 12px rgba(56,191,255,0.4);
-  white-space:nowrap;
-}
+/* featured */
+.feat{position:relative;display:flex;gap:14px;align-items:center;padding:16px;border-radius:20px;margin-bottom:10px;overflow:hidden;
+  background:linear-gradient(135deg,rgba(56,191,255,.16),rgba(139,92,246,.16));border:1px solid rgba(139,92,246,.35)}
+.feat::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:40%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.12),transparent);transform:skewX(-18deg);animation:sheen 4.5s ease-in-out infinite}
+@keyframes sheen{60%,100%{left:140%}}
+.feat .ic{width:54px;height:54px;border-radius:16px}
+.feat .ic svg{width:28px;height:28px}
 
-/* ─── STATS ─── */
-.stats{
-  display:flex;justify-content:center;
-  margin-bottom:26px;
-  border:1px solid rgba(56,191,255,0.10);
-  border-radius:16px;overflow:hidden;
-  background:rgba(0,10,40,0.28);
-  backdrop-filter:blur(20px);
-}
-.stat{flex:1;padding:15px 8px;text-align:center;transition:background 0.2s;cursor:default;}
-.stat:not(:last-child){border-right:1px solid rgba(56,191,255,0.10);}
-.stat:hover{background:rgba(56,191,255,0.05);}
-.stat-n{
-  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;
-  color:var(--c1);display:block;line-height:1;
-  text-shadow:0 0 18px rgba(56,191,255,0.45);
-}
-.stat-l{font-size:8.5px;color:var(--muted);letter-spacing:0.7px;margin-top:4px;display:block;text-transform:uppercase;}
+/* product list */
+.list{display:flex;flex-direction:column;gap:9px}
+.p{display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:18px;
+  background:rgba(255,255,255,.035);border:1px solid var(--line);
+  transition:transform .25s cubic-bezier(.16,1,.3,1),background .25s,border-color .25s}
+.p:hover{transform:translateY(-2px);background:rgba(255,255,255,.06);border-color:color-mix(in srgb,var(--ac) 45%,transparent)}
+.ic{width:46px;height:46px;border-radius:14px;flex-shrink:0;display:grid;place-items:center;color:var(--ac);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--ac) 22%,transparent),color-mix(in srgb,var(--ac) 6%,transparent));
+  border:1px solid color-mix(in srgb,var(--ac) 35%,transparent);
+  box-shadow:0 8px 22px -8px color-mix(in srgb,var(--ac) 60%,transparent),inset 0 1px 0 rgba(255,255,255,.12)}
+.ic svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.pi{flex:1;min-width:0;text-align:left}
+.pn{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:#fff;line-height:1.25}
+.pn span.t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ps{margin-top:3px;font-size:11px;color:var(--muted);font-weight:300;line-height:1.4}
+.tg{font-size:8.5px;font-weight:800;letter-spacing:.8px;padding:2px 7px;border-radius:6px;flex-shrink:0;text-transform:uppercase}
+.hot{color:#ff6b8a;background:rgba(255,107,138,.14);border:1px solid rgba(255,107,138,.3)}
+.new{color:var(--c4);background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3)}
+.vip{color:var(--c5);background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3)}
+.pr{flex-shrink:0;text-align:right}
+.pr b{display:block;font:700 10.5px 'Orbitron',sans-serif;color:var(--ac);letter-spacing:.3px}
+.pr small{display:block;margin-top:3px;font-size:9px;color:var(--muted)}
 
-/* ─── TICKER ─── */
-.ticker-wrap{
-  overflow:hidden;border:1px solid rgba(255,255,255,0.06);
-  border-radius:11px;padding:9px 0;
-  background:rgba(0,8,28,0.38);
-  position:relative;margin-bottom:26px;
-  backdrop-filter:blur(10px);
-}
-.ticker-wrap::before,.ticker-wrap::after{
-  content:'';position:absolute;top:0;bottom:0;width:44px;z-index:2;pointer-events:none;
-}
-.ticker-wrap::before{left:0;background:linear-gradient(90deg,rgba(4,8,28,0.95),transparent);}
-.ticker-wrap::after{right:0;background:linear-gradient(-90deg,rgba(4,8,28,0.95),transparent);}
-.ticker{display:flex;white-space:nowrap;animation:tick 25s linear infinite;}
-.ti{display:flex;flex-shrink:0;}
-.t{font-size:10px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;padding:0 20px;color:var(--muted);}
-.t.b{color:var(--c1);text-shadow:0 0 8px rgba(56,191,255,0.5);}
-.t.p{color:var(--c2);text-shadow:0 0 8px rgba(139,92,246,0.5);}
-.t.g{color:var(--c4);text-shadow:0 0 8px rgba(52,211,153,0.5);}
-.tdot{color:rgba(56,191,255,0.25);padding:0;}
-@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+/* ===== MARQUEE ===== */
+.mq{overflow:hidden;border-radius:16px;padding:11px 0;position:relative;border:1px solid var(--line);background:rgba(0,0,0,.25)}
+.mq::before,.mq::after{content:'';position:absolute;top:0;bottom:0;width:46px;z-index:2;pointer-events:none}
+.mq::before{left:0;background:linear-gradient(90deg,#070914,transparent)}
+.mq::after{right:0;background:linear-gradient(-90deg,#070914,transparent)}
+.mq-t{display:flex;width:max-content;animation:mq 28s linear infinite}
+.mq-t span{padding:0 18px;font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:36px}
+.mq-t span::after{content:'';width:5px;height:5px;transform:rotate(45deg);background:var(--c1);box-shadow:0 0 8px var(--c1);opacity:.7}
+@keyframes mq{to{transform:translateX(-50%)}}
 
-/* ─── DIVIDER ─── */
-.divider{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
-.divider span{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(56,191,255,0.35),transparent);}
-.divider i{font-style:normal;font-size:8px;color:var(--c1);letter-spacing:2.5px;text-shadow:0 0 10px var(--c1);white-space:nowrap;}
+/* ===== PERKS ===== */
+.perks{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.perk{display:flex;gap:10px;align-items:center;padding:12px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid var(--line);text-align:left}
+.perk svg{width:20px;height:20px;flex-shrink:0;stroke:var(--c1);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.perk b{display:block;font-size:11.5px;font-weight:600}
+.perk small{display:block;font-size:9.5px;color:var(--muted);margin-top:1px}
 
-/* ─── BUTTONS ─── */
-.links{display:flex;flex-direction:column;gap:11px;}
-.btn{
-  display:flex;align-items:center;gap:15px;
-  width:100%;padding:16px 18px;border-radius:15px;
-  text-decoration:none;font-size:13.5px;font-weight:500;
-  position:relative;overflow:hidden;border:none;
-  transition:transform 0.25s cubic-bezier(0.16,1,0.3,1),box-shadow 0.25s;
-  cursor:pointer;backdrop-filter:blur(20px);
-  text-align:left;
-}
-.btn::before{
-  content:'';position:absolute;left:-120%;top:0;bottom:0;width:80%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent);
-  transition:left 0.7s ease;pointer-events:none;
-}
-.btn:hover::before{left:150%;}
-.btn:hover{transform:translateY(-4px) scale(1.008);}
-.btn:active{transform:translateY(-1px) scale(0.998);}
+/* ===== CONTACT ===== */
+.contact{padding:20px 16px 18px}
+.btn{position:relative;display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border-radius:20px;overflow:hidden;
+  text-decoration:none;color:#fff;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s;-webkit-tap-highlight-color:transparent}
+.btn+.btn{margin-top:11px}
+.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.2) 50%,transparent 70%);transform:translateX(-120%);transition:transform .8s}
+.btn:hover::before{transform:translateX(120%)}
+.btn:hover{transform:translateY(-3px)}
+.btn:active{transform:scale(.98)}
+.btn-z{background:linear-gradient(135deg,#0a7bff,#0050e6 60%,#003fb8);box-shadow:0 14px 34px -10px rgba(0,104,255,.75),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-z:hover{box-shadow:0 20px 44px -10px rgba(0,104,255,.95),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn-a{background:linear-gradient(135deg,#9b6bff,#6d3df0 55%,#4b22c4);box-shadow:0 14px 34px -10px rgba(124,77,255,.75),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-a:hover{box-shadow:0 20px 44px -10px rgba(124,77,255,.95),inset 0 1px 0 rgba(255,255,255,.35)}
+.bi{width:48px;height:48px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;position:relative}
+.bi.zl{background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.bi.zl svg{width:34px;height:34px}
+.bi.ad{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px)}
+.bi.ad svg{width:25px;height:25px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bi .on{position:absolute;right:-3px;bottom:-3px;width:14px;height:14px;border-radius:50%;background:var(--c4);border:2.5px solid #5a30dd;box-shadow:0 0 10px var(--c4)}
+.bl{flex:1;min-width:0;text-align:left}
+.bt{font-size:15px;font-weight:700;line-height:1.2}
+.bs{font-size:11.5px;opacity:.8;margin-top:3px;font-weight:300}
+.go{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;flex-shrink:0;transition:transform .3s}
+.btn:hover .go{transform:translateX(4px)}
+.go svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.copy{margin-top:11px;width:100%;padding:12px;border-radius:16px;border:1px dashed rgba(255,255,255,.2);background:transparent;color:var(--muted);
+  font:500 12px 'Be Vietnam Pro',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.25s}
+.copy:hover{color:#fff;border-color:var(--c1);background:rgba(56,191,255,.07)}
+.copy svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.copy.ok{color:var(--c4);border-color:var(--c4)}
 
-.btn-zalo{
-  background:linear-gradient(135deg,rgba(56,191,255,0.11) 0%,rgba(0,70,150,0.08) 100%);
-  border:1px solid rgba(56,191,255,0.22);color:var(--c1);
-}
-.btn-zalo:hover{box-shadow:0 14px 44px rgba(56,191,255,0.22),0 0 0 1px rgba(56,191,255,0.30) inset;}
-
-.btn-admin{
-  background:linear-gradient(135deg,rgba(139,92,246,0.11) 0%,rgba(80,0,160,0.08) 100%);
-  border:1px solid rgba(139,92,246,0.22);color:var(--c2);
-}
-.btn-admin:hover{box-shadow:0 14px 44px rgba(139,92,246,0.22),0 0 0 1px rgba(139,92,246,0.30) inset;}
-
-.btn-icon{
-  width:40px;height:40px;border-radius:11px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;font-size:18px;
-  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
-  transition:transform 0.2s,box-shadow 0.2s;
-}
-.btn:hover .btn-icon{transform:scale(1.12) rotate(-5deg);}
-.btn-zalo .btn-icon{background:rgba(56,191,255,0.08);}
-.btn-admin .btn-icon{background:rgba(139,92,246,0.08);}
-
-.btn-label{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1;}
-.btn-title{font-size:13.5px;font-weight:600;letter-spacing:0.2px;line-height:1.2;}
-.btn-sub{font-size:10.5px;opacity:0.42;font-weight:300;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
-.btn-arrow{margin-left:auto;font-size:17px;opacity:0.32;transition:transform 0.2s,opacity 0.2s;flex-shrink:0;}
-.btn:hover .btn-arrow{transform:translateX(5px);opacity:0.9;}
-
-/* ─── FOOTER ─── */
-.footer{
-  margin-top:28px;display:flex;align-items:center;justify-content:center;
-  gap:9px;font-size:9.5px;color:rgba(180,210,255,0.14);letter-spacing:0.4px;
-}
-.fdot{width:3px;height:3px;border-radius:50%;background:rgba(56,191,255,0.25);}
-
-/* ─── RIPPLE ─── */
-.ripple{position:absolute;border-radius:50%;transform:scale(0);background:rgba(56,191,255,0.18);animation:rout 0.65s linear;pointer-events:none;}
-@keyframes rout{to{transform:scale(4);opacity:0;}}
-
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
-@media(max-width:420px){
-  .card{padding:36px 20px 32px;border-radius:22px;}
-  .name{font-size:36px;letter-spacing:1px;}
-  .av-frame{width:110px;height:110px;}
-  .btn-sub{max-width:140px;}
-}
+.foot{text-align:center;font-size:10px;color:rgba(190,212,255,.28);letter-spacing:.6px;padding:4px 0 6px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px);opacity:0;z-index:10;padding:11px 20px;border-radius:99px;
+  background:rgba(8,12,30,.92);border:1px solid rgba(52,211,153,.4);color:var(--c4);font-size:12px;font-weight:600;transition:.35s cubic-bezier(.16,1,.3,1);backdrop-filter:blur(14px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+/* ===== SPLASH + MUSIC ===== */
+.splash{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  background:radial-gradient(ellipse at 50% 40%,rgba(30,40,110,.55),#05060f 70%);cursor:pointer;
+  transition:opacity .8s ease,visibility .8s,transform .8s cubic-bezier(.16,1,.3,1);-webkit-tap-highlight-color:transparent}
+.splash.out{opacity:0;visibility:hidden;transform:scale(1.06);pointer-events:none}
+.sp-logo{font:900 44px 'Orbitron',sans-serif;letter-spacing:2px;
+  background:linear-gradient(120deg,#fff,var(--c1) 40%,var(--c2) 75%,var(--c3));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sp-btn{display:flex;align-items:center;gap:12px;padding:15px 30px;border-radius:99px;font-size:13px;font-weight:600;letter-spacing:.6px;color:#fff;
+  background:linear-gradient(135deg,rgba(56,191,255,.25),rgba(139,92,246,.25));border:1px solid rgba(56,191,255,.45);
+  box-shadow:0 0 40px rgba(56,191,255,.25);animation:pulse 2s ease-in-out infinite}
+.sp-btn svg{width:18px;height:18px;fill:#fff}
+@keyframes pulse{50%{box-shadow:0 0 60px rgba(139,92,246,.5);transform:scale(1.04)}}
+.sp-hint{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.mbtn{position:fixed;top:max(env(safe-area-inset-top),16px);right:16px;z-index:20;width:44px;height:44px;border-radius:50%;
+  display:none;align-items:center;justify-content:center;gap:2.5px;cursor:pointer;border:1px solid rgba(56,191,255,.35);
+  background:rgba(8,12,34,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 8px 24px rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent}
+.mbtn.show{display:flex}
+.mbtn i{width:3px;height:6px;border-radius:2px;background:var(--c1);box-shadow:0 0 8px var(--c1);animation:eq 1s ease-in-out infinite}
+.mbtn i:nth-child(2){animation-delay:.2s;background:var(--c2)}
+.mbtn i:nth-child(3){animation-delay:.4s;background:var(--c3)}
+.mbtn i:nth-child(4){animation-delay:.1s;background:var(--c4)}
+@keyframes eq{50%{height:18px}}
+.mbtn.mute i{animation:none;height:4px;opacity:.4}
+.mbtn.mute::after{content:'';position:absolute;width:26px;height:2px;background:#fff;transform:rotate(-45deg);border-radius:2px}
+@media(max-width:380px){.name{font-size:32px}.pr small{display:none}.hero{padding:30px 16px 22px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div id="bg-img"></div>
-<div id="galaxy"></div>
-<div class="neb n1"></div><div class="neb n2"></div><div class="neb n3"></div>
-<canvas id="s"></canvas>
-<div id="scan"></div>
+<div class="aurora"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="grid"></div>
+<canvas id="fx"></canvas>
 
-<div class="card">
-  <div class="c tl"></div><div class="c tr"></div>
-  <div class="c bl"></div><div class="c br"></div>
-
-  <!-- Avatar -->
-  <div class="av-zone">
-    <div class="ring ring3"></div>
-    <div class="ring ring1"></div>
-    <div class="ring ring2"></div>
-    <div class="av-frame">
-      <img class="av-img" id="av-img"
-        src="https://i.ibb.co/2H62RZw/orbit-silhou.jpg" alt="nminh ios"
-        onerror="this.classList.add('err');document.getElementById('av-fb').style.display='flex'">
-      <div id="av-fb" style="display:none;width:100%;height:100%;border-radius:50%;background:conic-gradient(var(--c1),var(--c2),var(--c3),var(--c4),var(--c1));align-items:center;justify-content:center;font-family:Orbitron,sans-serif;font-size:38px;font-weight:900;color:#03040f;position:absolute;inset:0;">N</div>
-    </div>
-    <div class="badge"><div class="badge-dot"></div><span class="badge-txt">Online</span></div>
-  </div>
-
-  <!-- Tags -->
-  <div class="tags">
-    <span class="tag tb">Hack Tools</span>
-    <span class="tag tp">Cheat Menu</span>
-    <span class="tag tk">Filza IPA</span>
-    <span class="tag tg">iOS Tools</span>
-    <span class="tag tb">Proxy</span>
-    <span class="tag tp">3105 Menu</span>
-  </div>
-
-  <!-- Name -->
-  <div class="name-wrap">
-    <h1 class="name" id="nm">nminh ios</h1>
-    <span class="name-line"></span>
-  </div>
-
-  <!-- Tagline -->
-  <p class="tagline">
-    <span id="typed"></span><span class="cursor-blink"></span>
-  </p>
-
-  <!-- Products -->
-  <span class="section-label">Sản phẩm</span>
-  <div class="products">
-    <div class="prod">
-      <div class="prod-icon">🛡️</div>
-      <div class="prod-info">
-        <div class="prod-name">Proxy & Hack Tools</div>
-        <div class="prod-sub">Bypass, spoof, underground tools</div>
-      </div>
-      <div class="prod-price">Liên hệ</div>
-    </div>
-    <div class="prod">
-      <div class="prod-icon">🎮</div>
-      <div class="prod-info">
-        <div class="prod-name">Cheat Menu / Aim Menu</div>
-        <div class="prod-sub">Full feature, update liên tục</div>
-      </div>
-      <div class="prod-price">Liên hệ</div>
-    </div>
-    <div class="prod">
-      <div class="prod-icon">📦</div>
-      <div class="prod-info">
-        <div class="prod-name">Filza & 3105 File IPA</div>
-        <div class="prod-sub">Filza browser, 3105 menu IPA</div>
-      </div>
-      <div class="prod-price">Liên hệ</div>
-    </div>
-    <div class="prod">
-      <div class="prod-icon">⚡</div>
-      <div class="prod-info">
-        <div class="prod-name">3105 Menu IPA</div>
-        <div class="prod-sub">Premium iOS mod menu, ổn định</div>
-      </div>
-      <div class="prod-price">Liên hệ</div>
-    </div>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat">
-      <span class="stat-n" data-target="2.4K">0</span>
-      <span class="stat-l">Members</span>
-    </div>
-    <div class="stat">
-      <span class="stat-n" data-target="50">0</span>
-      <span class="stat-l">Sản phẩm</span>
-    </div>
-    <div class="stat">
-      <span class="stat-n" data-target="100">0</span>
-      <span class="stat-l">% Uy tín</span>
-    </div>
-  </div>
-
-  <!-- Ticker -->
-  <div class="ticker-wrap">
-    <div class="ticker">
-      <div class="ti">
-        <span class="t b">Hack Tools</span><span class="tdot">◆</span>
-        <span class="t">Aim Menu</span><span class="tdot">◆</span>
-        <span class="t g">Filza IPA</span><span class="tdot">◆</span>
-        <span class="t">3105 Menu</span><span class="tdot">◆</span>
-        <span class="t p">Proxy iOS</span><span class="tdot">◆</span>
-        <span class="t">Uy Tín</span><span class="tdot">◆</span>
-        <span class="t b">Underground</span><span class="tdot">◆</span>
-        <span class="t">Chất Lượng</span><span class="tdot">◆</span>
-      </div>
-      <div class="ti" aria-hidden="true">
-        <span class="t b">Hack Tools</span><span class="tdot">◆</span>
-        <span class="t">Aim Menu</span><span class="tdot">◆</span>
-        <span class="t g">Filza IPA</span><span class="tdot">◆</span>
-        <span class="t">3105 Menu</span><span class="tdot">◆</span>
-        <span class="t p">Proxy iOS</span><span class="tdot">◆</span>
-        <span class="t">Uy Tín</span><span class="tdot">◆</span>
-        <span class="t b">Underground</span><span class="tdot">◆</span>
-        <span class="t">Chất Lượng</span><span class="tdot">◆</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Divider -->
-  <div class="divider"><span></span><i>✦ LIÊN HỆ ✦</i><span></span></div>
-
-  <!-- Buttons -->
-  <div class="links">
-    <a href="https://zalo.me/g/dlqhlvurg4hyfahit1ou" class="btn btn-zalo" target="_blank" rel="noopener" id="btn1">
-      <div class="btn-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24"><rect width="24" height="24" rx="7" fill="rgba(56,191,255,0.15)"/><text x="3.5" y="17.5" font-family="Arial Black" font-size="14" font-weight="900" fill="#38bfff">Z</text></svg>
-      </div>
-      <div class="btn-label">
-        <span class="btn-title">Box Zalo</span>
-        <span class="btn-sub">Tham gia cộng đồng ngay</span>
-      </div>
-      <span class="btn-arrow">→</span>
-    </a>
-    <a href="https://zalo.me/84976788751" class="btn btn-admin" target="_blank" rel="noopener" id="btn2">
-      <div class="btn-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24"><rect width="24" height="24" rx="7" fill="rgba(139,92,246,0.15)"/><text x="3" y="17.5" font-family="Arial Black" font-size="13" font-weight="900" fill="#8b5cf6">AD</text></svg>
-      </div>
-      <div class="btn-label">
-        <span class="btn-title">Zalo Admin</span>
-        <span class="btn-sub">Đặt hàng, hỗ trợ trực tiếp</span>
-      </div>
-      <span class="btn-arrow">→</span>
-    </a>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <span>nminh ios</span>
-    <div class="fdot"></div>
-    <span>2025</span>
-    <div class="fdot"></div>
-    <span>underground store</span>
-  </div>
+<div class="splash" id="splash">
+  <div class="sp-logo">nminh ios</div>
+  <div class="sp-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Chạm để vào</div>
+  <div class="sp-hint">iOS Underground Store</div>
 </div>
+<div class="mbtn" id="mbtn" aria-label="Bật/tắt nhạc"><i></i><i></i><i></i><i></i></div>
+<audio id="bgm" loop preload="auto" playsinline></audio>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="glass hero">
+    <div class="av">
+      <div class="av-ring"></div>
+      <div class="av-in">
+        <img src="https://i.ibb.co/2H62RZw/orbit-silhou.jpg" alt="nminh ios" onerror="this.style.display='none';document.getElementById('fb').style.display='flex'">
+        <div class="av-fb" id="fb">N</div>
+      </div>
+      <div class="live"><i></i>ONLINE</div>
+    </div>
+
+    <h1 class="name">nminh ios
+      <svg class="verify" viewBox="0 0 24 24"><path fill="#38bfff" d="M12 1.8l2.5 1.9 3.1-.2 1.1 2.9 2.7 1.6-.8 3 1.2 2.9-2.3 2.1-.5 3.1-3.1.5L12 22.2l-2.9-2.4-3.1-.5-.5-3.1L3.2 14l1.2-2.9-.8-3 2.7-1.6 1.1-2.9 3.1.2z"/><path d="M8.3 12.2l2.5 2.5 4.9-5" fill="none" stroke="#05060f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </h1>
+    <div class="handle">@nminh.ios · iOS Underground Store</div>
+    <p class="type"><span id="typed"></span><span class="caret"></span></p>
+
+    <div class="chips">
+      <span class="chip" style="--cc:#38bfff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/></svg>Hack Tools</span>
+      <span class="chip" style="--cc:#8b5cf6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>Cheat Menu</span>
+      <span class="chip" style="--cc:#f472b6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>Filza IPA</span>
+      <span class="chip" style="--cc:#34d399"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg>iOS Tools</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b data-t="2400" data-s="K">0</b><span>Members</span></div>
+      <div class="stat"><b data-t="50" data-s="+">0</b><span>Sản phẩm</span></div>
+      <div class="stat"><b data-t="100" data-s="%">0</b><span>Uy tín</span></div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="glass sec">
+    <div class="sec-h"><div class="sec-t">Sản phẩm</div><div class="sec-c">6 mặt hàng</div></div>
+
+    <div class="feat" style="--ac:#a78bfa">
+      <div class="ic" style="--ac:#a78bfa"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div>
+      <div class="pi">
+        <div class="pn"><span class="t">3105 Menu IPA</span><span class="tg vip">Best seller</span></div>
+        <div class="ps">Premium iOS mod menu · mượt, ổn định, cập nhật liên tục</div>
+      </div>
+      <div class="pr" style="--ac:#c4b5fd"><b>Liên hệ</b><small>Nhận ngay</small></div>
+    </div>
+
+    <div class="list">
+      <div class="p" style="--ac:#38bfff">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="pi"><div class="pn"><span class="t">Proxy iOS</span><span class="tg hot">Hot</span></div><div class="ps">Bypass, spoof, tốc độ cao · ổn định</div></div>
+        <div class="pr"><b>Liên hệ</b><small>Theo tháng</small></div>
+      </div>
+
+      <div class="p" style="--ac:#f472b6">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1v5M12 18v5M1 12h5M18 12h5"/></svg></div>
+        <div class="pi"><div class="pn"><span class="t">Aim Menu</span><span class="tg hot">Hot</span></div><div class="ps">Full feature · tối ưu cho iOS mới</div></div>
+        <div class="pr"><b>Liên hệ</b><small>Full tính năng</small></div>
+      </div>
+
+      <div class="p" style="--ac:#34d399">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+        <div class="pi"><div class="pn"><span class="t">Filza File Manager</span></div><div class="ps">Duyệt &amp; chỉnh sửa file hệ thống</div></div>
+        <div class="pr"><b>Liên hệ</b><small>File IPA</small></div>
+      </div>
+
+      <div class="p" style="--ac:#fbbf24">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></div>
+        <div class="pi"><div class="pn"><span class="t">Pack IPA Premium</span><span class="tg new">New</span></div><div class="ps">Tổng hợp IPA đã mod, sẵn sàng cài</div></div>
+        <div class="pr"><b>Liên hệ</b><small>Cập nhật</small></div>
+      </div>
+
+      <div class="p" style="--ac:#60a5fa">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="12" cy="16" r="1.3"/></svg></div>
+        <div class="pi"><div class="pn"><span class="t">Cert &amp; Ký IPA</span><span class="tg new">New</span></div><div class="ps">Chứng chỉ bền · cài không lo revoke</div></div>
+        <div class="pr"><b>Liên hệ</b><small>Bảo hành</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="mq"><div class="mq-t" id="mq"></div></div>
+
+  <!-- PERKS -->
+  <section class="glass sec" style="padding-bottom:16px">
+    <div class="sec-h"><div class="sec-t">Cam kết</div></div>
+    <div class="perks">
+      <div class="perk"><svg viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="M9 12l2 2 4-4"/></svg><div><b>Uy tín 100%</b><small>Giao dịch minh bạch</small></div></div>
+      <div class="perk"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div><b>Hỗ trợ 24/7</b><small>Phản hồi nhanh</small></div></div>
+      <div class="perk"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><div><b>Update liên tục</b><small>Theo bản iOS mới</small></div></div>
+      <div class="perk"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 110-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 100-5C13 2 12 7 12 7z"/></svg><div><b>Bảo hành</b><small>Lỗi là đổi / fix</small></div></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="glass contact">
+    <div class="sec-h"><div class="sec-t">Liên hệ</div><div class="sec-c">Phản hồi trong vài phút</div></div>
+
+    <a class="btn btn-z" href="https://zalo.me/g/dlqhlvurg4hyfahit1ou" target="_blank" rel="noopener">
+      <div class="bi zl">
+        <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#0068ff"/><path fill="#fff" d="M24 9.5c-8.3 0-15 5.7-15 12.8 0 4 2.1 7.6 5.5 10-.3 1.8-1.1 3.5-2.3 4.9-.2.3 0 .7.4.7 2.6-.1 5-.9 6.9-2.3 1.4.4 2.9.6 4.5.6 8.3 0 15-5.7 15-12.9S32.3 9.5 24 9.5z"/><text x="24" y="27.6" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="12.5" fill="#0068ff">Zalo</text></svg>
+      </div>
+      <div class="bl"><div class="bt">Tham gia Box Zalo</div><div class="bs">Cộng đồng · cập nhật hàng mới mỗi ngày</div></div>
+      <div class="go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    </a>
+
+    <a class="btn btn-a" href="https://zalo.me/84976788751" target="_blank" rel="noopener">
+      <div class="bi ad">
+        <svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="2.5" y="13" width="4.5" height="6" rx="2"/><rect x="17" y="13" width="4.5" height="6" rx="2"/><path d="M19.5 19c0 1.7-2 2.5-5 2.5"/></svg>
+        <span class="on"></span>
+      </div>
+      <div class="bl"><div class="bt">Nhắn Admin</div><div class="bs">Đặt hàng &amp; hỗ trợ trực tiếp · 097 678 8751</div></div>
+      <div class="go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    </a>
+
+    <button class="copy" id="copy" type="button">
+      <svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>
+      <span>Sao chép số Zalo admin</span>
+    </button>
+  </section>
+
+  <div class="foot">© 2025 nminh ios · underground store</div>
+</main>
+<div class="toast" id="toast">Đã sao chép 0976788751</div>
 
 <script>
-// stars
-const cv = document.getElementById('s'), cx = cv.getContext('2d');
-let W, H;
-function rsz(){ W=cv.width=innerWidth; H=cv.height=innerHeight; }
-rsz(); addEventListener('resize', rsz);
-const SC = [[56,191,255],[139,92,246],[244,114,182],[52,211,153],[96,165,250],[255,255,255]];
-class St {
-  constructor(init){
-    this.x=Math.random()*(W||800);
-    this.y=init?Math.random()*(H||600):(H||600)+5;
-    this.r=Math.random()*1.5+0.1;
-    this.vy=-(Math.random()*0.3+0.05);
-    this.vx=(Math.random()-0.5)*0.12;
-    this.a=Math.random()*0.6+0.1;
-    this.c=SC[Math.floor(Math.random()*SC.length)];
-    this.tw=Math.random()*Math.PI*2;
-    this.ts=Math.random()*0.03+0.008;
-    this.life=Math.random()*280+80;this.age=0;
+// music
+(function(){
+  const MUSIC_URL='https://soundcloud.com/ducky_17/ch-p-ni-m-trong-em-remix-hot';
+  const VOLUME=60;             // 0 - 100
+  const sp=document.getElementById('splash'),au=document.getElementById('bgm'),mb=document.getElementById('mbtn');
+  if(!MUSIC_URL){sp.remove();return;}
+
+  let playing=false,wantPlay=false,sc=null;
+  const isSC=/soundcloud\.com/i.test(MUSIC_URL);
+
+  if(isSC){
+    const f=document.createElement('iframe');
+    f.allow='autoplay';f.setAttribute('aria-hidden','true');
+    f.style.cssText='position:fixed;left:-10px;top:-10px;width:2px;height:2px;opacity:0;pointer-events:none;border:0';
+    f.src='https://w.soundcloud.com/player/?url='+encodeURIComponent(MUSIC_URL)+'&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false';
+    document.body.appendChild(f);
+    const js=document.createElement('script');
+    js.src='https://w.soundcloud.com/player/api.js';
+    js.onload=()=>{
+      const w=SC.Widget(f);
+      w.bind(SC.Widget.Events.READY,()=>{
+        sc=w;w.setVolume(VOLUME);
+        if(wantPlay)w.play();
+      });
+      w.bind(SC.Widget.Events.FINISH,()=>{w.seekTo(0);w.play()});
+    };
+    document.head.appendChild(js);
+  }else{
+    au.src=MUSIC_URL;au.volume=VOLUME/100;
   }
-  up(){this.x+=this.vx;this.y+=this.vy;this.tw+=this.ts;this.age++;if(this.y<-5||this.age>this.life)Object.assign(this,new St(false));}
-  dw(){
-    const a=this.a*(0.5+0.5*Math.sin(this.tw));
-    cx.beginPath();cx.arc(this.x,this.y,this.r,0,Math.PI*2);
-    cx.fillStyle=`rgba(${this.c[0]},${this.c[1]},${this.c[2]},${a})`;cx.fill();
-    if(this.r>1){cx.beginPath();cx.arc(this.x,this.y,this.r*2.8,0,Math.PI*2);cx.fillStyle=`rgba(${this.c[0]},${this.c[1]},${this.c[2]},${a*0.1})`;cx.fill();}
+
+  function play(){
+    wantPlay=true;playing=true;mb.classList.remove('mute');
+    if(isSC){if(sc)sc.play()}
+    else au.play().catch(()=>{playing=false;mb.classList.add('mute')});
   }
-}
-class Sh {
-  constructor(){this.reset();}
-  reset(){this.x=Math.random()*W;this.y=Math.random()*H*0.4;this.len=Math.random()*90+50;this.sp=Math.random()*7+4;this.a=0.85;this.ang=Math.PI/4+(Math.random()-0.5)*0.35;this.ok=true;this.c=SC[Math.floor(Math.random()*SC.length)];}
-  up(){this.x+=Math.cos(this.ang)*this.sp;this.y+=Math.sin(this.ang)*this.sp;this.a-=0.022;if(this.a<=0)this.ok=false;}
-  dw(){
-    const[r,g,b]=this.c;
-    const gr=cx.createLinearGradient(this.x,this.y,this.x-Math.cos(this.ang)*this.len,this.y-Math.sin(this.ang)*this.len);
-    gr.addColorStop(0,`rgba(${r},${g},${b},${this.a})`);gr.addColorStop(1,`rgba(${r},${g},${b},0)`);
-    cx.save();cx.strokeStyle=gr;cx.lineWidth=1.5;cx.shadowBlur=8;cx.shadowColor=`rgba(${r},${g},${b},0.5)`;
-    cx.beginPath();cx.moveTo(this.x,this.y);cx.lineTo(this.x-Math.cos(this.ang)*this.len,this.y-Math.sin(this.ang)*this.len);cx.stroke();cx.restore();
+  function pause(){
+    wantPlay=false;playing=false;mb.classList.add('mute');
+    if(isSC){if(sc)sc.pause()}else au.pause();
   }
-}
-const stars=[];for(let i=0;i<200;i++)stars.push(new St(true));
-let shoots=[];setInterval(()=>{if(shoots.length<3)shoots.push(new Sh());},2200);
-function loop(){cx.clearRect(0,0,W,H);stars.forEach(s=>{s.up();s.dw();});shoots=shoots.filter(s=>s.ok);shoots.forEach(s=>{s.up();s.dw();});requestAnimationFrame(loop);}
-loop();
+
+  let started=false;
+  function enter(){
+    if(started)return;started=true;
+    sp.classList.add('out');setTimeout(()=>sp.remove(),900);
+    mb.classList.add('show');
+    play();
+  }
+  sp.addEventListener('click',enter);
+  sp.addEventListener('touchend',e=>{e.preventDefault();enter()},{passive:false});
+  mb.addEventListener('click',()=>{playing?pause():play()});
+  document.addEventListener('visibilitychange',()=>{
+    if(!started)return;
+    if(document.hidden){if(isSC){if(sc)sc.pause()}else au.pause()}
+    else if(playing){if(isSC){if(sc)sc.play()}else au.play().catch(()=>{})}
+  });
+})();
+
+// marquee
+(function(){
+  const w=['Proxy iOS','Aim Menu','Filza IPA','3105 Menu','Pack IPA','Cert Ký IPA','Uy Tín','Hỗ trợ 24/7','Underground'];
+  const html=w.map(x=>'<span>'+x+'</span>').join('');
+  document.getElementById('mq').innerHTML=html+html;
+})();
 
 // typing
-const lines=['Proxy · Hack Tools · iOS Underground','Cheat menu · Filza · 3105 IPA','Uy tín — hỗ trợ tận tâm, 24/7.'];
-const tel=document.getElementById('typed');
-let li=0,ci=0,del=false,pause=0;
-function ty(){
-  if(pause>0){pause--;setTimeout(ty,50);return;}
-  const cur=lines[li];
-  if(!del){tel.textContent=cur.slice(0,++ci);if(ci===cur.length){del=true;pause=55;}setTimeout(ty,55);}
-  else{tel.textContent=cur.slice(0,--ci);if(ci===0){del=false;li=(li+1)%lines.length;pause=12;}setTimeout(ty,28);}
-}
-ty();
+(function(){
+  const L=['Proxy · Hack Tools · iOS Underground','Cheat menu · Filza · 3105 IPA','Uy tín — hỗ trợ tận tâm 24/7'];
+  const el=document.getElementById('typed');let i=0,c=0,d=false,p=0;
+  (function t(){
+    if(p>0){p--;return setTimeout(t,50)}
+    const s=L[i];
+    if(!d){el.textContent=s.slice(0,++c);if(c===s.length){d=true;p=40}setTimeout(t,50)}
+    else{el.textContent=s.slice(0,--c);if(!c){d=false;i=(i+1)%L.length;p=8}setTimeout(t,24)}
+  })();
+})();
 
 // counters
-function cnt(el,target){
-  const isK=target.includes('K');const num=parseFloat(target);
-  const steps=1400/(1000/60);let step=0;
-  const iv=setInterval(()=>{
-    step++;const v=num*step/steps;
-    if(step>=steps){clearInterval(iv);}
-    let d=isK?(num*step/steps>=1?(v.toFixed(1)+'K'):Math.round(v*1000).toString()):Math.round(v).toString();
-    el.textContent=d;
-  },1000/60);
-}
-const io=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){cnt(e.target,e.target.dataset.target);io.unobserve(e.target);}});},{threshold:0.5});
-document.querySelectorAll('.stat-n').forEach(el=>io.observe(el));
+(function(){
+  const run=e=>{
+    const T=+e.dataset.t,S=e.dataset.s,st=performance.now(),D=1500;
+    (function f(n){
+      const k=Math.min((n-st)/D,1),v=T*(1-Math.pow(1-k,3));
+      e.textContent=S==='K'?(v/1000).toFixed(1)+'K':Math.round(v)+S;
+      if(k<1)requestAnimationFrame(f);
+    })(st);
+  };
+  const io=new IntersectionObserver(a=>a.forEach(x=>{if(x.isIntersecting){run(x.target);io.unobserve(x.target)}}),{threshold:.4});
+  document.querySelectorAll('.stat b').forEach(e=>io.observe(e));
+})();
 
-// ripple
-['btn1','btn2'].forEach(id=>{
-  document.getElementById(id)?.addEventListener('click',function(e){
-    const r=document.createElement('span');r.className='ripple';
-    const rect=this.getBoundingClientRect(),size=Math.max(rect.width,rect.height);
-    r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
-    this.appendChild(r);r.addEventListener('animationend',()=>r.remove());
+// copy
+(function(){
+  const b=document.getElementById('copy'),t=document.getElementById('toast');
+  b.addEventListener('click',async()=>{
+    const n='0976788751';
+    try{await navigator.clipboard.writeText(n)}catch(e){
+      const x=document.createElement('textarea');x.value=n;document.body.appendChild(x);x.select();document.execCommand('copy');x.remove();
+    }
+    b.classList.add('ok');t.classList.add('show');
+    setTimeout(()=>{b.classList.remove('ok');t.classList.remove('show')},1800);
   });
-});
+})();
 
-// tilt
-const card=document.querySelector('.card');
-card.addEventListener('mousemove',e=>{
-  const rc=card.getBoundingClientRect();
-  const dx=(e.clientX-rc.left-rc.width/2)/(rc.width/2);
-  const dy=(e.clientY-rc.top-rc.height/2)/(rc.height/2);
-  card.style.cssText='transition:none;transform:perspective(900px) rotateY('+dx*4+'deg) rotateX('+(-dy*4)+'deg) scale(1.007)';
-});
-card.addEventListener('mouseleave',()=>{card.style.cssText='transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);transform:perspective(900px) rotateY(0) rotateX(0) scale(1)';});
+// particles
+(function(){
+  const cv=document.getElementById('fx'),x=cv.getContext('2d');let W,H,dpr=Math.min(devicePixelRatio||1,2);
+  const C=['56,191,255','139,92,246','244,114,182','52,211,153','255,255,255'];
+  function rs(){W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';x.setTransform(dpr,0,0,dpr,0,0)}
+  rs();addEventListener('resize',rs);
+  const P=Array.from({length:Math.min(110,Math.floor(innerWidth/5))},()=>({
+    x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.2,vy:-(Math.random()*.25+.04),vx:(Math.random()-.5)*.1,
+    a:Math.random()*.6+.15,t:Math.random()*6.28,s:Math.random()*.03+.01,c:C[Math.floor(Math.random()*C.length)]}));
+  (function l(){
+    x.clearRect(0,0,W,H);
+    for(const p of P){
+      p.x+=p.vx;p.y+=p.vy;p.t+=p.s;
+      if(p.y<-5){p.y=H+5;p.x=Math.random()*W}
+      const a=p.a*(.5+.5*Math.sin(p.t));
+      x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);x.fillStyle='rgba('+p.c+','+a+')';x.fill();
+    }
+    requestAnimationFrame(l);
+  })();
+})();
 </script>
 </body>
 </html>
