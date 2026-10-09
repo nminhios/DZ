@@ -208,6 +208,13 @@ canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
 @keyframes eq{50%{height:18px}}
 .mbtn.mute i{animation:none;height:4px;opacity:.4}
 .mbtn.mute::after{content:'';position:absolute;width:26px;height:2px;background:#fff;transform:rotate(-45deg);border-radius:2px}
+.mhint{position:fixed;left:50%;bottom:max(env(safe-area-inset-bottom),22px);transform:translate(-50%,24px);opacity:0;pointer-events:none;z-index:30;
+  display:flex;align-items:center;gap:9px;padding:11px 18px;border-radius:99px;font-size:12px;font-weight:600;color:#fff;white-space:nowrap;
+  background:rgba(8,12,34,.88);border:1px solid rgba(56,191,255,.45);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 24px rgba(56,191,255,.25);transition:.45s cubic-bezier(.16,1,.3,1)}
+.mhint.show{opacity:1;transform:translate(-50%,0);animation:hintp 2s ease-in-out infinite}
+@keyframes hintp{50%{box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 34px rgba(139,92,246,.55)}}
+.mhint svg{width:15px;height:15px;fill:var(--c1)}
 @media(max-width:380px){.name{font-size:32px}.pr small{display:none}.hero{padding:30px 16px 22px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -223,6 +230,7 @@ canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
   <div class="sp-hint">iOS Underground Store</div>
 </div>
 <div class="mbtn" id="mbtn" aria-label="Bật/tắt nhạc"><i></i><i></i><i></i><i></i></div>
+<div class="mhint" id="mhint"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Chạm vào màn hình để bật nhạc</div>
 <audio id="bgm" loop preload="auto" playsinline></audio>
 
 <main class="wrap">
@@ -354,23 +362,30 @@ canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
 (function(){
   const MUSIC_URL='https://soundcloud.com/ducky_17/ch-p-ni-m-trong-em-remix-hot';
   const VOLUME=60;             // 0 - 100
-  const SPLASH=false;          // true = hiện màn hình "Chạm để vào" (phát nhạc chắc chắn 100%)
-  const sp=document.getElementById('splash'),au=document.getElementById('bgm'),mb=document.getElementById('mbtn');
+  const SPLASH=false;          // true = hiện màn hình "Chạm để vào" (chắc chắn có nhạc 100%)
+  const sp=document.getElementById('splash'),au=document.getElementById('bgm'),
+        mb=document.getElementById('mbtn'),hint=document.getElementById('mhint');
   if(!MUSIC_URL){sp.remove();return;}
   if(!SPLASH)sp.remove();
   mb.classList.add('show','mute');
 
   const isSC=/soundcloud\.com/i.test(MUSIC_URL);
-  let sc=null,isPlaying=false,userPaused=false,ready=false;
+  const EV=['pointerdown','pointerup','mouseup','touchend','click','keydown','wheel'];
+  let sc=null,ready=false,isPlaying=false,userPaused=false;
 
-  const setUI=on=>{isPlaying=on;mb.classList.toggle('mute',!on)};
-
-  function play(){
+  function setUI(on){
+    isPlaying=on;
+    mb.classList.toggle('mute',!on);
+    if(on){hint.classList.remove('show');disarm()}
+  }
+  function kick(){
+    if(isPlaying||userPaused)return;
     if(isSC){if(ready)sc.play()}
-    else au.play().then(()=>setUI(true)).catch(()=>setUI(false));
+    else au.play().then(()=>setUI(true)).catch(()=>{});
   }
   function pause(){
-    if(isSC){if(ready)sc.pause()}else{au.pause();setUI(false)}
+    if(isSC){if(ready)sc.pause()}else au.pause();
+    setUI(false);
   }
 
   if(isSC){
@@ -383,45 +398,44 @@ canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
     js.src='https://w.soundcloud.com/player/api.js';
     js.onload=()=>{
       sc=SC.Widget(f);
-      sc.bind(SC.Widget.Events.READY,()=>{
-        ready=true;sc.setVolume(VOLUME);
-        if(!userPaused)sc.play();
-      });
-      sc.bind(SC.Widget.Events.PLAY,()=>{sc.setVolume(VOLUME);setUI(true);disarm()});
-      sc.bind(SC.Widget.Events.PAUSE,()=>setUI(false));
+      sc.bind(SC.Widget.Events.READY,()=>{ready=true;sc.setVolume(VOLUME);kick()});
+      sc.bind(SC.Widget.Events.PLAY,()=>sc.setVolume(VOLUME));
+      sc.bind(SC.Widget.Events.PLAY_PROGRESS,()=>{if(!isPlaying&&!userPaused)setUI(true)});
+      sc.bind(SC.Widget.Events.PAUSE,()=>{isPlaying=false;mb.classList.add('mute')});
       sc.bind(SC.Widget.Events.FINISH,()=>{sc.seekTo(0);sc.play()});
     };
     document.head.appendChild(js);
   }else{
     au.src=MUSIC_URL;au.volume=VOLUME/100;au.preload='auto';
-    play();
+    kick();
   }
 
-  // Nếu trình duyệt chặn tự phát: bắt đầu ngay ở lần chạm / cuộn / bấm đầu tiên
-  const EV=['pointerdown','pointerup','mouseup','touchend','click','keydown','wheel'];
+  // Bị trình duyệt chặn: thử lại ở MỌI lần chạm / cuộn / bấm cho đến khi nhạc thật sự chạy
   function onGesture(e){
-    if(mb.contains(e.target)||userPaused)return;
-    if(!isPlaying)play();
-    if(!isSC)disarm();
+    if(mb.contains(e.target)||userPaused||isPlaying)return;
+    kick();
+    setTimeout(kick,300);setTimeout(kick,900);setTimeout(kick,2000);
   }
   function disarm(){EV.forEach(t=>window.removeEventListener(t,onGesture,true))}
   EV.forEach(t=>window.addEventListener(t,onGesture,{capture:true,passive:true}));
 
+  // Sau 1.5s mà chưa có tiếng: hiện nhắc nhỏ để khách chạm vào màn hình
+  setTimeout(()=>{if(!isPlaying&&!userPaused)hint.classList.add('show')},1500);
+
   mb.addEventListener('click',()=>{
     if(isPlaying){userPaused=true;pause()}
-    else{userPaused=false;play()}
+    else{userPaused=false;kick()}
   });
 
-  // Bấm "Chạm để vào" (khi SPLASH=true)
   if(SPLASH){
-    const enter=()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),900);userPaused=false;play()};
+    const enter=()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),900);userPaused=false;kick();setTimeout(kick,300)};
     sp.addEventListener('click',enter);
     sp.addEventListener('touchend',e=>{e.preventDefault();enter()},{passive:false});
   }
 
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden){if(isPlaying)pause()}
-    else if(!userPaused)play();
+    else{userPaused=userPaused;kick()}
   });
 })();
 
