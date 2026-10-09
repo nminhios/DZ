@@ -350,61 +350,78 @@ canvas#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
 <div class="toast" id="toast">Đã sao chép 0976788751</div>
 
 <script>
-// music
+// music — tự phát khi vào trang
 (function(){
   const MUSIC_URL='https://soundcloud.com/ducky_17/ch-p-ni-m-trong-em-remix-hot';
   const VOLUME=60;             // 0 - 100
+  const SPLASH=false;          // true = hiện màn hình "Chạm để vào" (phát nhạc chắc chắn 100%)
   const sp=document.getElementById('splash'),au=document.getElementById('bgm'),mb=document.getElementById('mbtn');
   if(!MUSIC_URL){sp.remove();return;}
+  if(!SPLASH)sp.remove();
+  mb.classList.add('show','mute');
 
-  let playing=false,wantPlay=false,sc=null;
   const isSC=/soundcloud\.com/i.test(MUSIC_URL);
+  let sc=null,isPlaying=false,userPaused=false,ready=false;
+
+  const setUI=on=>{isPlaying=on;mb.classList.toggle('mute',!on)};
+
+  function play(){
+    if(isSC){if(ready)sc.play()}
+    else au.play().then(()=>setUI(true)).catch(()=>setUI(false));
+  }
+  function pause(){
+    if(isSC){if(ready)sc.pause()}else{au.pause();setUI(false)}
+  }
 
   if(isSC){
     const f=document.createElement('iframe');
-    f.allow='autoplay';f.setAttribute('aria-hidden','true');
+    f.allow='autoplay';f.setAttribute('aria-hidden','true');f.title='music';
     f.style.cssText='position:fixed;left:-10px;top:-10px;width:2px;height:2px;opacity:0;pointer-events:none;border:0';
-    f.src='https://w.soundcloud.com/player/?url='+encodeURIComponent(MUSIC_URL)+'&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false';
+    f.src='https://w.soundcloud.com/player/?url='+encodeURIComponent(MUSIC_URL)+'&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false';
     document.body.appendChild(f);
     const js=document.createElement('script');
     js.src='https://w.soundcloud.com/player/api.js';
     js.onload=()=>{
-      const w=SC.Widget(f);
-      w.bind(SC.Widget.Events.READY,()=>{
-        sc=w;w.setVolume(VOLUME);
-        if(wantPlay)w.play();
+      sc=SC.Widget(f);
+      sc.bind(SC.Widget.Events.READY,()=>{
+        ready=true;sc.setVolume(VOLUME);
+        if(!userPaused)sc.play();
       });
-      w.bind(SC.Widget.Events.FINISH,()=>{w.seekTo(0);w.play()});
+      sc.bind(SC.Widget.Events.PLAY,()=>{sc.setVolume(VOLUME);setUI(true);disarm()});
+      sc.bind(SC.Widget.Events.PAUSE,()=>setUI(false));
+      sc.bind(SC.Widget.Events.FINISH,()=>{sc.seekTo(0);sc.play()});
     };
     document.head.appendChild(js);
   }else{
-    au.src=MUSIC_URL;au.volume=VOLUME/100;
-  }
-
-  function play(){
-    wantPlay=true;playing=true;mb.classList.remove('mute');
-    if(isSC){if(sc)sc.play()}
-    else au.play().catch(()=>{playing=false;mb.classList.add('mute')});
-  }
-  function pause(){
-    wantPlay=false;playing=false;mb.classList.add('mute');
-    if(isSC){if(sc)sc.pause()}else au.pause();
-  }
-
-  let started=false;
-  function enter(){
-    if(started)return;started=true;
-    sp.classList.add('out');setTimeout(()=>sp.remove(),900);
-    mb.classList.add('show');
+    au.src=MUSIC_URL;au.volume=VOLUME/100;au.preload='auto';
     play();
   }
-  sp.addEventListener('click',enter);
-  sp.addEventListener('touchend',e=>{e.preventDefault();enter()},{passive:false});
-  mb.addEventListener('click',()=>{playing?pause():play()});
+
+  // Nếu trình duyệt chặn tự phát: bắt đầu ngay ở lần chạm / cuộn / bấm đầu tiên
+  const EV=['pointerdown','pointerup','mouseup','touchend','click','keydown','wheel'];
+  function onGesture(e){
+    if(mb.contains(e.target)||userPaused)return;
+    if(!isPlaying)play();
+    if(!isSC)disarm();
+  }
+  function disarm(){EV.forEach(t=>window.removeEventListener(t,onGesture,true))}
+  EV.forEach(t=>window.addEventListener(t,onGesture,{capture:true,passive:true}));
+
+  mb.addEventListener('click',()=>{
+    if(isPlaying){userPaused=true;pause()}
+    else{userPaused=false;play()}
+  });
+
+  // Bấm "Chạm để vào" (khi SPLASH=true)
+  if(SPLASH){
+    const enter=()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),900);userPaused=false;play()};
+    sp.addEventListener('click',enter);
+    sp.addEventListener('touchend',e=>{e.preventDefault();enter()},{passive:false});
+  }
+
   document.addEventListener('visibilitychange',()=>{
-    if(!started)return;
-    if(document.hidden){if(isSC){if(sc)sc.pause()}else au.pause()}
-    else if(playing){if(isSC){if(sc)sc.play()}else au.play().catch(()=>{})}
+    if(document.hidden){if(isPlaying)pause()}
+    else if(!userPaused)play();
   });
 })();
 
