@@ -3,159 +3,189 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#070711">
-  <meta name="description" content="nminhios — Personal link bio. Kết nối, khám phá Menu, Aim và những món đồ chơi iOS.">
+  <meta name="theme-color" content="#080810">
+  <meta name="description" content="nminhios — Không gian cá nhân, nơi tập hợp những liên kết và cộng đồng của mình.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="nminhios — Personal Bio">
-  <meta property="og:description" content="My digital space. Connect with nminhios.">
+  <meta property="og:title" content="nminhios — Personal Space">
+  <meta property="og:description" content="Một chạm để kết nối với nminhios.">
   <meta property="og:image" content="https://cdn.upanhlaylink.com/i/TLOGJDhT.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="color-scheme" content="dark">
-  <title>nminhios — Personal Bio</title>
+  <title>nminhios — Personal Space</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preconnect" href="https://cdn.upanhlaylink.com" crossorigin>
   <link rel="preconnect" href="https://w.soundcloud.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="config.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
-  <div class="site-bg" aria-hidden="true">
-    <div class="bg-image"></div>
-    <div class="bg-vignette"></div>
-    <div class="aurora aurora-one"></div>
-    <div class="aurora aurora-two"></div>
-    <div class="grid-glow"></div>
-    <canvas id="particle-canvas"></canvas>
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atmosphere-image"></div>
+    <div class="atmosphere-wash"></div>
+    <div class="light-cloud light-cloud-one"></div>
+    <div class="light-cloud light-cloud-two"></div>
+    <div class="light-cloud light-cloud-three"></div>
+    <div class="fine-grid"></div>
+    <div class="grain"></div>
+    <canvas id="particle-field"></canvas>
   </div>
-  <div class="pointer-glow" aria-hidden="true"></div>
-  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <div class="cursor-light" aria-hidden="true"></div>
+  <div class="reading-line" id="reading-line" aria-hidden="true"></div>
 
-  <header class="topbar">
-    <a class="brand" href="#home" aria-label="nminhios home">
-      <span class="brand-icon">N<span>.</span></span>
-      <span class="brand-name">nminhios</span>
+  <header class="masthead" id="top">
+    <a class="wordmark" href="#top" aria-label="nminhios — đầu trang">
+      <span class="wordmark-name">nminhios</span>
+      <span class="wordmark-caption">PERSONAL SPACE</span>
     </a>
-    <div class="topbar-right">
-      <span class="top-label"><i></i> PERSONAL LINK SPACE</span>
-      <a class="top-contact" href="#connect">Kết nối <span>↗</span></a>
+    <div class="masthead-meta">
+      <span class="presence"><i></i> DIGITAL PRESENCE</span>
+      <span class="meta-divider"></span>
+      <span class="location-label">VIET NAM&nbsp; / &nbsp;2026</span>
     </div>
   </header>
 
-  <main id="home">
-    <section class="bio-layout" aria-label="Trang bio nminhios">
-      <div class="profile-column">
-        <div class="profile-card glass-card reveal" id="profile-card">
-          <div class="card-orbit orbit-a" aria-hidden="true"></div>
-          <div class="card-orbit orbit-b" aria-hidden="true"></div>
-          <div class="profile-topline"><span class="micro-label">PERSONAL PROFILE</span><span class="profile-code">N / 001</span></div>
-
-          <div class="avatar-stage">
-            <div class="avatar-aura"></div>
-            <div class="avatar-ring ring-one"></div>
-            <div class="avatar-ring ring-two"></div>
-            <div class="avatar-frame">
-              <img class="avatar" data-avatar src="https://cdn.upanhlaylink.com/i/TLOGJDhT.png" alt="Avatar nminhios" width="132" height="132" fetchpriority="high">
-            </div>
-            <span class="avatar-star star-one">✦</span>
-            <span class="avatar-star star-two">✧</span>
-          </div>
-
-          <div class="identity-block">
-            <div class="name-line"><h1>nminhios</h1><span class="verified" title="Official profile" aria-label="Official profile">✓</span></div>
-            <p class="identity-handle">@nminhios <span class="handle-divider">/</span> VIET NAM</p>
-            <p class="bio-description">Chào bạn, mình là <strong>nminhios</strong>.<br>Chia sẻ và cung cấp <span>Menu</span>, <span>Aim</span> cùng những món đồ chơi thú vị dành cho iOS.</p>
-          </div>
-
-          <div class="profile-tags" aria-label="Lĩnh vực">
-            <span><i class="tag-dot purple"></i> iOS</span>
-            <span><i class="tag-dot cyan"></i> Digital</span>
-            <span><i class="tag-dot pink"></i> Tech</span>
-          </div>
-
-          <div class="profile-divider"></div>
-          <div class="profile-foot"><span><b class="foot-spark">✳</b> GOOD VIBES, GOOD TECH</span><span>PERSONAL BIO</span></div>
-          <div class="card-watermark" aria-hidden="true">N</div>
-        </div>
-
-        <div class="social-mini reveal reveal-delay-1" id="connect">
-          <span class="social-mini-label">FIND ME AROUND</span>
-          <div class="social-icons">
-            <a class="social-icon" data-link="zaloContact" href="https://zalo.me/84976788751" target="_blank" rel="noopener noreferrer" aria-label="Zalo cá nhân" title="Zalo cá nhân">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.4 5.2C3.6 5.2 3 5.8 3 6.6v7.8c0 .8.6 1.4 1.4 1.4h1.4v3l3.3-3h7.5c.8 0 1.4-.6 1.4-1.4v-1.2H8.3c-2.2 0-3.9-1.8-3.9-4V5.2Z"/><path d="M10 3.5h9.6c.8 0 1.4.6 1.4 1.4v7.7c0 .8-.6 1.4-1.4 1.4h-1.4v3l-3.3-3h-3.2c.6-.8.9-1.8.9-2.9V8.2c0-2-1-3.7-2.6-4.7Z"/></svg>
-            </a>
-            <a class="social-icon" data-link="telegram" href="https://t.me/nminhhdz" target="_blank" rel="noopener noreferrer" aria-label="Telegram" title="Telegram">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21.3 4.2-3.2 15.1c-.2 1.1-.8 1.4-1.7.9l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.4-4.8 8.8-8c.4-.4-.1-.6-.6-.2L6.1 13.5l-4.6-1.4c-1-.3-1-1 .2-1.5L19.6 3.8c.9-.3 1.9.2 1.7.4Z"/></svg>
-            </a>
-            <a class="social-icon" data-link="tiktok" href="https://www.tiktok.com/@nminhios" target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.8 3c.2 2 1.3 3.5 3.2 4.1.7.2 1.3.3 2 .3v3.4a9.3 9.3 0 0 1-5.2-1.7v6.1a6.1 6.1 0 1 1-6.1-6.1c.4 0 .8 0 1.2.1v3.5a2.8 2.8 0 1 0 1.6 2.5V3h3.3Z"/></svg>
-            </a>
-            <button class="social-icon share-button" id="share-button" type="button" aria-label="Chia sẻ trang bio" title="Chia sẻ trang này">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
-            </button>
-          </div>
-        </div>
+  <main class="page-shell">
+    <section class="opening reveal" aria-labelledby="opening-title">
+      <div class="opening-overline">
+        <span class="overline-index">01</span>
+        <span class="overline-text">A SMALL CORNER OF MY WORLD</span>
+        <span class="overline-rule"></span>
+        <span class="overline-year">EST. 2026</span>
       </div>
-
-      <div class="links-column">
-        <div class="links-heading reveal">
-          <div class="eyebrow"><span class="eyebrow-line"></span> MY DIGITAL SPACE</div>
-          <h2>One tap.<br><span>Find your way.</span></h2>
-          <p>Mọi liên kết của mình ở ngay đây.<br>Chọn nơi bạn muốn ghé qua nhé.</p>
-        </div>
-
-        <div class="link-stack" id="links">
-          <a class="link-card link-featured reveal" data-link="zaloContact" href="https://zalo.me/84976788751" target="_blank" rel="noopener noreferrer">
-            <span class="link-icon icon-zalo"><span>Z</span></span>
-            <span class="link-copy"><b>Liên hệ trực tiếp</b><small>Trao đổi và tư vấn qua Zalo cá nhân</small></span>
-            <span class="link-arrow">↗</span>
-            <span class="link-shine" aria-hidden="true"></span>
-          </a>
-          <a class="link-card reveal reveal-delay-1" data-link="zaloGroup" href="https://zalo.me/g/dlqhlvurg4hyfahit1ou" target="_blank" rel="noopener noreferrer">
-            <span class="link-icon icon-group"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-1.5a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V20m7-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-7.7a4 4 0 0 1 0 7.4M22 20v-1.5a4 4 0 0 0-3-3.9"/></svg></span>
-            <span class="link-copy"><b>Tham gia Box Zalo</b><small>Cộng đồng và cập nhật mới nhất</small></span>
-            <span class="link-arrow">↗</span>
-          </a>
-          <a class="link-card reveal reveal-delay-2" data-link="telegram" href="https://t.me/nminhhdz" target="_blank" rel="noopener noreferrer">
-            <span class="link-icon icon-telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21.3 4.2-3.2 15.1c-.2 1.1-.8 1.4-1.7.9l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.4-4.8 8.8-8c.4-.4-.1-.6-.6-.2L6.1 13.5l-4.6-1.4c-1-.3-1-1 .2-1.5L19.6 3.8c.9-.3 1.9.2 1.7.4Z"/></svg></span>
-            <span class="link-copy"><b>Telegram</b><small>Nhắn tin và theo dõi kênh của mình</small></span>
-            <span class="link-arrow">↗</span>
-          </a>
-          <a class="link-card reveal reveal-delay-3" data-link="tiktok" href="https://www.tiktok.com/@nminhios" target="_blank" rel="noopener noreferrer">
-            <span class="link-icon icon-tiktok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.8 3c.2 2 1.3 3.5 3.2 4.1.7.2 1.3.3 2 .3v3.4a9.3 9.3 0 0 1-5.2-1.7v6.1a6.1 6.1 0 1 1-6.1-6.1c.4 0 .8 0 1.2.1v3.5a2.8 2.8 0 1 0 1.6 2.5V3h3.3Z"/></svg></span>
-            <span class="link-copy"><b>TikTok</b><small>Video, nội dung và những điều thú vị</small></span>
-            <span class="link-arrow">↗</span>
-          </a>
-          <a class="link-card link-outline reveal reveal-delay-4" data-link="menuContact" href="https://zalo.me/84976788751" target="_blank" rel="noopener noreferrer">
-            <span class="link-icon icon-menu"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9h8M8 12h5M8 15h7"/></svg></span>
-            <span class="link-copy"><b>Menu · Aim · Đồ chơi iOS</b><small>Xem thông tin và hỏi trực tiếp qua Zalo</small></span>
-            <span class="link-arrow">↗</span>
-          </a>
-        </div>
-
-        <div class="links-foot reveal"><span><i></i> THANKS FOR STOPPING BY</span><span>SCROLL LESS · CONNECT MORE</span></div>
+      <div class="opening-copy">
+        <h1 id="opening-title">Less noise.<br><span>More connection.</span></h1>
+        <p>Một nơi nhỏ để bạn tìm thấy mình trên không gian số.<br class="desktop-break"> Chọn một liên kết và cùng kết nối nhé.</p>
+      </div>
+      <div class="opening-side-note" aria-hidden="true">
+        <span>LINKS</span>
+        <span class="side-note-line"></span>
+        <span>01 — 04</span>
       </div>
     </section>
 
-    <section class="bottom-note reveal">
-      <div class="bottom-note-line"></div>
-      <p>Made with <span>✦</span> by <strong>nminhios</strong></p>
-      <span class="bottom-note-sub">A LITTLE CORNER OF MY DIGITAL WORLD</span>
+    <section class="bio-composition" aria-label="Profile và các liên kết của nminhios">
+      <article class="profile-panel glass-panel reveal" id="profile-panel">
+        <div class="profile-topline">
+          <span>PERSONAL PROFILE</span>
+          <span class="profile-serial">N / 001</span>
+        </div>
+
+        <div class="profile-art" aria-hidden="true">
+          <div class="art-image"></div>
+          <div class="art-shade"></div>
+          <div class="art-coordinate coordinate-left">21°01' N</div>
+          <div class="art-coordinate coordinate-right">105°51' E</div>
+          <div class="art-center-label">INDEPENDENT DIGITAL SPACE</div>
+          <div class="art-orbit art-orbit-one"></div>
+          <div class="art-orbit art-orbit-two"></div>
+          <div class="art-horizon"></div>
+        </div>
+
+        <div class="avatar-assembly">
+          <div class="avatar-halo"></div>
+          <div class="avatar-track avatar-track-one"></div>
+          <div class="avatar-track avatar-track-two"></div>
+          <div class="avatar-mask">
+            <span class="avatar-fallback">N</span>
+            <img class="profile-avatar" data-avatar src="https://cdn.upanhlaylink.com/i/TLOGJDhT.png" alt="Ảnh đại diện nminhios" width="144" height="144" fetchpriority="high">
+          </div>
+          <span class="avatar-spark avatar-spark-one"></span>
+          <span class="avatar-spark avatar-spark-two"></span>
+        </div>
+
+        <div class="profile-content">
+          <div class="identity-meta">
+            <span class="identity-status"><i></i> AVAILABLE TO CONNECT</span>
+            <span class="identity-country">VIETNAM</span>
+          </div>
+          <h2>nminhios</h2>
+          <p class="profile-handle">@nminhios</p>
+          <p class="profile-description">Chào bạn, mình là <strong>nminhios</strong>.<br>Mình chia sẻ Menu, Aim và những món đồ chơi thú vị dành cho iOS. Cảm ơn bạn đã ghé thăm!</p>
+          <div class="interest-list" aria-label="Lĩnh vực quan tâm">
+            <span>IOS</span>
+            <span>MENU</span>
+            <span>AIM</span>
+            <span>DIGITAL</span>
+          </div>
+        </div>
+
+        <div class="profile-bottomline">
+          <span>GOOD VIBES, GOOD TECH</span>
+          <span>PERSONAL BIO / 2026</span>
+        </div>
+        <div class="profile-watermark" aria-hidden="true">N</div>
+      </article>
+
+      <section class="links-panel reveal reveal-late" aria-labelledby="links-title">
+        <div class="links-intro">
+          <div class="section-overline"><span>02</span><span>STAY CONNECTED</span></div>
+          <h2 id="links-title">Find me<br><em>anywhere.</em></h2>
+          <p>Tất cả liên kết quan trọng<br>được đặt gọn tại đây.</p>
+        </div>
+
+        <div class="link-list" id="link-list">
+          <a class="link-row link-row-primary" data-link="zaloContact" href="https://zalo.me/84976788751" target="_blank" rel="noopener noreferrer">
+            <span class="link-number">01</span>
+            <span class="link-text"><strong>Liên hệ trực tiếp</strong><small>Trao đổi về Menu, Aim và đồ chơi iOS</small></span>
+            <span class="link-action">OPEN LINK</span>
+            <span class="row-glint" aria-hidden="true"></span>
+          </a>
+          <a class="link-row" data-link="zaloGroup" href="https://zalo.me/g/dlqhlvurg4hyfahit1ou" target="_blank" rel="noopener noreferrer">
+            <span class="link-number">02</span>
+            <span class="link-text"><strong>Box Zalo</strong><small>Tham gia cộng đồng nminhios</small></span>
+            <span class="link-action">OPEN LINK</span>
+            <span class="row-glint" aria-hidden="true"></span>
+          </a>
+          <a class="link-row" data-link="telegram" href="https://t.me/nminhhdz" target="_blank" rel="noopener noreferrer">
+            <span class="link-number">03</span>
+            <span class="link-text"><strong>Telegram</strong><small>Kết nối và nhắn tin với mình</small></span>
+            <span class="link-action">OPEN LINK</span>
+            <span class="row-glint" aria-hidden="true"></span>
+          </a>
+          <a class="link-row" data-link="tiktok" href="https://www.tiktok.com/@nminhios" target="_blank" rel="noopener noreferrer">
+            <span class="link-number">04</span>
+            <span class="link-text"><strong>TikTok</strong><small>Theo dõi video và nội dung mới</small></span>
+            <span class="link-action">OPEN LINK</span>
+            <span class="row-glint" aria-hidden="true"></span>
+          </a>
+        </div>
+
+        <div class="link-list-foot">
+          <span class="foot-live"><i></i> LINKS ARE READY</span>
+          <span>CHOOSE YOUR DESTINATION</span>
+        </div>
+      </section>
+    </section>
+
+    <section class="closing-strip reveal">
+      <div class="closing-copy">
+        <span class="closing-overline">THANK YOU FOR BEING HERE</span>
+        <p>See you on the other side<span>.</span></p>
+      </div>
+      <button class="share-control" id="share-button" type="button">
+        <span class="share-main">SHARE THIS SPACE</span>
+        <span class="share-sub">COPY OR SEND THE LINK</span>
+      </button>
     </section>
   </main>
 
-  <footer class="footer"><span>© <span id="year"></span> NMINHIOS</span><a href="#home">BACK TO TOP ↑</a><span>VIET NAM · DIGITAL</span></footer>
+  <footer class="site-footer">
+    <span>© <span id="year"></span> NMINHIOS</span>
+    <span class="footer-center">MADE WITH INTENTION · VIET NAM</span>
+    <a href="#top">BACK TO TOP</a>
+  </footer>
 
-  <button class="music-control" id="music-toggle" type="button" aria-label="Bật nhạc nền" aria-pressed="false">
-    <span class="music-disc"><i></i><i></i><i></i></span>
-    <span class="music-control-copy"><b id="music-label">NHẠC NỀN</b><small>soundtrack</small></span>
-    <span class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+  <button class="sound-control" id="music-toggle" type="button" aria-label="Bật nhạc nền" aria-pressed="false">
+    <span class="sound-status" aria-hidden="true"></span>
+    <span class="sound-copy"><strong id="music-label">BACKGROUND SOUND</strong><small id="music-subtitle">TAP TO LISTEN</small></span>
+    <span class="sound-level" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
   </button>
-  <div class="music-tooltip" id="music-tooltip" role="status" aria-live="polite">Chạm để bật nhạc nền</div>
-  <iframe id="soundcloud-audio" class="soundcloud-audio" title="Nhạc nền SoundCloud" allow="autoplay" loading="eager"></iframe>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="sound-hint" id="music-tooltip" role="status" aria-live="polite"></div>
+  <iframe id="soundcloud-frame" class="soundcloud-frame" title="Nhạc nền SoundCloud" allow="autoplay" loading="eager"></iframe>
+  <div class="notice" id="notice" role="status" aria-live="polite"></div>
 </body>
 </html>
