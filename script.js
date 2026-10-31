@@ -2,270 +2,293 @@
   "use strict";
 
   const config = window.NMINHIOS_CONFIG || {};
+  const links = config.links || {};
   const $ = (selector, root = document) => root.querySelector(selector);
-  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const toast = $("#toast");
+  let toastTimer = 0;
 
-  // Pull editable public details from config.js.
-  const avatar = $("[data-avatar]");
-  if (avatar && typeof config.avatar === "string" && config.avatar.trim()) {
-    avatar.src = config.avatar.trim();
-  }
-  $$('[data-link]').forEach((element) => {
-    const key = element.dataset.link;
-    const destination = config.links?.[key];
-    if (typeof destination === "string" && /^https:\/\//i.test(destination)) {
-      element.href = destination;
-    }
-  });
-  const year = $("#year");
-  if (year) year.textContent = String(new Date().getFullYear());
-  if (avatar) {
-    avatar.addEventListener("error", () => {
-      avatar.style.display = "none";
-    }, { once: true });
-  }
-
-  // Small, non-intrusive notice used by share and audio controls.
-  const notice = $("#notice");
-  let noticeTimer = 0;
-  const showNotice = (message) => {
-    if (!notice) return;
-    notice.textContent = message;
-    notice.classList.add("visible");
-    window.clearTimeout(noticeTimer);
-    noticeTimer = window.setTimeout(() => notice.classList.remove("visible"), 2900);
+  const showToast = (message) => {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add("is-visible");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2500);
   };
 
-  // Reveal the sections once they enter the viewport.
+  // Apply public owner-configured URLs without coupling them to the page layout.
+  $$('[data-link]').forEach((node) => {
+    const destination = links[node.dataset.link];
+    if (typeof destination === "string" && destination.trim()) {
+      node.href = destination.trim();
+    } else {
+      node.addEventListener("click", (event) => {
+        event.preventDefault();
+        showToast("Liên kết này chưa được cấu hình.");
+      });
+    }
+  });
+
+  // Avatar fallback: the page remains usable even if the image host is unavailable.
+  const avatar = $("[data-avatar]");
+  if (avatar && typeof config.avatar === "string" && config.avatar.trim()) avatar.src = config.avatar.trim();
+  avatar?.addEventListener("error", () => {
+    if (avatar.dataset.fallbackApplied) return;
+    avatar.dataset.fallbackApplied = "true";
+    avatar.hidden = true;
+    const fallback = document.createElement("span");
+    fallback.className = "avatar-fallback";
+    fallback.textContent = (config.brand || "N").slice(0, 1).toUpperCase();
+    avatar.parentElement?.append(fallback);
+  }, { once: true });
+
+  // Reveal-on-scroll animation, with a safe fallback for older browsers.
   const revealItems = $$(".reveal");
-  if (reducedMotion || !("IntersectionObserver" in window)) {
-    revealItems.forEach((item) => item.classList.add("in-view"));
-  } else {
+  if ("IntersectionObserver" in window) {
     const revealObserver = new IntersectionObserver((entries, observer) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("in-view");
+          entry.target.classList.add("is-visible");
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -24px 0px" });
+    }, { threshold: 0.08, rootMargin: "0px 0px -20px 0px" });
     revealItems.forEach((item) => revealObserver.observe(item));
+  } else {
+    revealItems.forEach((item) => item.classList.add("is-visible"));
   }
+  // First viewport always appears, even when the observer is delayed by a browser.
+  window.addEventListener("load", () => {
+    revealItems.filter((item) => item.getBoundingClientRect().top < window.innerHeight * 1.05)
+      .forEach((item) => item.classList.add("is-visible"));
+  }, { once: true });
 
-  // Scroll progress without forcing a layout on every scroll event.
-  const readingLine = $("#reading-line");
-  let scrollQueued = false;
-  const updateScroll = () => {
-    if (!readingLine) return;
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    const amount = scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0;
-    readingLine.style.width = `${amount}%`;
-    scrollQueued = false;
+  const year = $("#year");
+  if (year) year.textContent = String(new Date().getFullYear());
+
+  // Scroll progress.
+  const progress = $("#scroll-progress");
+  let scrollTicking = false;
+  const updateProgress = () => {
+    if (!progress) return;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const ratio = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0;
+    progress.style.width = `${ratio * 100}%`;
+    scrollTicking = false;
   };
   window.addEventListener("scroll", () => {
-    if (!scrollQueued) {
-      scrollQueued = true;
-      window.requestAnimationFrame(updateScroll);
+    if (!scrollTicking) {
+      window.requestAnimationFrame(updateProgress);
+      scrollTicking = true;
     }
   }, { passive: true });
-  window.addEventListener("resize", updateScroll, { passive: true });
-  updateScroll();
+  updateProgress();
 
-  // Cursor light and subtle pointer response are desktop-only.
+  // Subtle cursor light and card spotlight/tilt on pointer devices only.
+  const pointerGlow = $(".pointer-glow");
+  const profileCard = $("#profile-card");
   const finePointer = window.matchMedia?.("(hover: hover) and (pointer: fine)").matches;
-  const cursorLight = $(".cursor-light");
-  if (finePointer && !reducedMotion) {
-    let pointerQueued = false;
-    let pointerX = 0;
-    let pointerY = 0;
-    window.addEventListener("pointermove", (event) => {
-      pointerX = event.clientX;
-      pointerY = event.clientY;
-      document.body.classList.add("pointer-active");
-      if (!pointerQueued) {
-        pointerQueued = true;
-        window.requestAnimationFrame(() => {
-          if (cursorLight) cursorLight.style.transform = `translate3d(${pointerX - 260}px, ${pointerY - 260}px, 0)`;
-          pointerQueued = false;
-        });
-      }
-    }, { passive: true });
-    window.addEventListener("pointerleave", () => document.body.classList.remove("pointer-active"));
-
-    // Soft, restrained 3D response on the profile panel.
-    const profile = $("#profile-panel");
-    if (profile) {
-      profile.addEventListener("pointermove", (event) => {
-        const rect = profile.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width - 0.5;
-        const y = (event.clientY - rect.top) / rect.height - 0.5;
-        profile.style.transform = `perspective(1100px) rotateX(${(-y * 2.2).toFixed(2)}deg) rotateY(${(x * 2.6).toFixed(2)}deg) translateY(-2px)`;
-      });
-      profile.addEventListener("pointerleave", () => {
-        profile.style.transform = "";
-      });
-    }
-
-    // Each link receives a soft radial highlight at the pointer position.
-    $$(".link-row").forEach((row) => {
-      row.addEventListener("pointermove", (event) => {
-        const rect = row.getBoundingClientRect();
-        row.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
-        row.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
-      });
-    });
-  }
-
-  // Lightweight ambient particles, capped for mobile and paused in background tabs.
-  const canvas = $("#particle-field");
-  if (canvas && !reducedMotion) {
-    const context = canvas.getContext("2d", { alpha: true });
-    if (context) {
-      let width = 0;
-      let height = 0;
-      let pixelRatio = 1;
-      let particles = [];
-      let animationFrame = 0;
-      let lastDraw = 0;
-      const makeParticle = () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.12,
-        vy: (Math.random() - 0.5) * 0.1 - 0.018,
-        radius: Math.random() * 1.05 + 0.35,
-        alpha: Math.random() * 0.34 + 0.1,
-        phase: Math.random() * Math.PI * 2,
-        hue: Math.random() > 0.54 ? 177 : 264
-      });
-      const resizeCanvas = () => {
-        pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = Math.round(width * pixelRatio);
-        canvas.height = Math.round(height * pixelRatio);
-        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-        const quantity = Math.min(48, Math.max(17, Math.round(width / 27)));
-        particles = Array.from({ length: quantity }, makeParticle);
-      };
-      const draw = (timestamp) => {
-        animationFrame = 0;
-        if (document.hidden) return;
-        if (timestamp - lastDraw < 30) {
-          animationFrame = window.requestAnimationFrame(draw);
-          return;
-        }
-        lastDraw = timestamp;
-        context.clearRect(0, 0, width, height);
-        const pulse = timestamp * 0.00045;
-        particles.forEach((particle, index) => {
-          particle.x += particle.vx;
-          particle.y += particle.vy;
-          if (particle.x < -8) particle.x = width + 8;
-          if (particle.x > width + 8) particle.x = -8;
-          if (particle.y < -8) particle.y = height + 8;
-          if (particle.y > height + 8) particle.y = -8;
-          const alpha = particle.alpha * (0.58 + (Math.sin(pulse + particle.phase) + 1) * 0.2);
-          context.beginPath();
-          context.fillStyle = `hsla(${particle.hue}, 76%, 78%, ${alpha})`;
-          context.shadowColor = `hsla(${particle.hue}, 85%, 74%, .34)`;
-          context.shadowBlur = particle.radius * 5;
-          context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-          context.fill();
-          context.shadowBlur = 0;
-          for (let next = index + 1; next < Math.min(particles.length, index + 5); next += 1) {
-            const other = particles[next];
-            const dx = particle.x - other.x;
-            const dy = particle.y - other.y;
-            const distance = Math.hypot(dx, dy);
-            if (distance < 112) {
-              context.beginPath();
-              context.strokeStyle = `rgba(173, 159, 218, ${(1 - distance / 112) * 0.045})`;
-              context.lineWidth = 0.55;
-              context.moveTo(particle.x, particle.y);
-              context.lineTo(other.x, other.y);
-              context.stroke();
-            }
+  if (finePointer) {
+    document.body.classList.add("has-pointer");
+    let pointerFrame = 0;
+    document.addEventListener("pointermove", (event) => {
+      if (pointerFrame) return;
+      pointerFrame = window.requestAnimationFrame(() => {
+        pointerGlow?.style.setProperty("left", `${event.clientX}px`);
+        pointerGlow?.style.setProperty("top", `${event.clientY}px`);
+        if (profileCard) {
+          const rect = profileCard.getBoundingClientRect();
+          const x = Math.min(100, Math.max(0, ((event.clientX - rect.left) / rect.width) * 100));
+          const y = Math.min(100, Math.max(0, ((event.clientY - rect.top) / rect.height) * 100));
+          profileCard.style.setProperty("--mx", `${x}%`);
+          profileCard.style.setProperty("--my", `${y}%`);
+          if (event.clientX >= rect.left - 30 && event.clientX <= rect.right + 30 && event.clientY >= rect.top - 30 && event.clientY <= rect.bottom + 30) {
+            const dx = (event.clientX - (rect.left + rect.width / 2)) / rect.width;
+            const dy = (event.clientY - (rect.top + rect.height / 2)) / rect.height;
+            profileCard.style.setProperty("--tilt-x", `${dx * 2.1}deg`);
+            profileCard.style.setProperty("--tilt-y", `${dy * -2.1}deg`);
+            profileCard.classList.add("is-tilting");
+          } else {
+            profileCard.classList.remove("is-tilting");
           }
-        });
-        animationFrame = window.requestAnimationFrame(draw);
-      };
-      const startParticles = () => {
-        if (!document.hidden && !animationFrame) animationFrame = window.requestAnimationFrame(draw);
-      };
-      const stopParticles = () => {
-        if (animationFrame) window.cancelAnimationFrame(animationFrame);
-        animationFrame = 0;
-      };
-      resizeCanvas();
-      startParticles();
-      window.addEventListener("resize", resizeCanvas, { passive: true });
-      document.addEventListener("visibilitychange", () => document.hidden ? stopParticles() : startParticles());
-    }
+        }
+        pointerFrame = 0;
+      });
+    }, { passive: true });
+    profileCard?.addEventListener("pointerleave", () => profileCard.classList.remove("is-tilting"));
   }
 
-  // Share the bio using the native share sheet, with clipboard fallback.
+  // Little light ripple on link-card interaction (visual only).
+  $$(".link-card").forEach((card) => {
+    card.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "touch") return;
+      const rect = card.getBoundingClientRect();
+      const ripple = document.createElement("span");
+      ripple.className = "link-ripple";
+      ripple.style.left = `${event.clientX - rect.left}px`;
+      ripple.style.top = `${event.clientY - rect.top}px`;
+      card.append(ripple);
+      window.setTimeout(() => ripple.remove(), 650);
+    });
+  });
+
+  // Share/copy current bio URL.
   const shareButton = $("#share-button");
   shareButton?.addEventListener("click", async () => {
-    const shareData = { title: "nminhios — Personal Space", text: "Kết nối với nminhios", url: window.location.href };
+    const shareData = { title: "nminhios — Personal Bio", text: "Kết nối với nminhios", url: window.location.href };
     try {
       if (navigator.share) {
         await navigator.share(shareData);
       } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(window.location.href);
-        showNotice("Đã sao chép liên kết bio.");
+        showToast("Đã sao chép liên kết bio!");
       } else {
-        showNotice("Hãy sao chép địa chỉ trang trên thanh trình duyệt.");
+        showToast("Hãy sao chép địa chỉ trên thanh trình duyệt nhé.");
       }
     } catch (error) {
-      if (error?.name !== "AbortError") showNotice("Không thể chia sẻ lúc này. Thử lại nhé.");
+      if (error?.name !== "AbortError") showToast("Không thể chia sẻ lúc này.");
     }
   });
 
-  // SoundCloud background playlist. Tracks play in order and loop forever.
-  // Browsers (especially iOS Safari) may require one user gesture before audio starts.
-  const audioFrame = $("#soundcloud-frame");
+  // Ambient particles. Keep the count modest on phones to preserve smooth scrolling.
+  const canvas = $("#particle-canvas");
+  const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  if (canvas && !reduceMotion) {
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (ctx) {
+      let width = 0;
+      let height = 0;
+      let particles = [];
+      let frame = 0;
+      let dpr = 1;
+      const makeParticle = () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.16,
+        vy: (Math.random() - 0.5) * 0.13 - 0.025,
+        radius: Math.random() * 1.35 + 0.35,
+        alpha: Math.random() * 0.48 + 0.12,
+        phase: Math.random() * Math.PI * 2,
+        tint: Math.random() > 0.52 ? 0 : 1
+      });
+      const resizeCanvas = () => {
+        dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const count = Math.min(62, Math.max(24, Math.round(width / 19)));
+        particles = Array.from({ length: count }, makeParticle);
+      };
+      const drawParticles = () => {
+        ctx.clearRect(0, 0, width, height);
+        const now = performance.now() * 0.0005;
+        particles.forEach((p, index) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < -10) p.x = width + 10;
+          if (p.x > width + 10) p.x = -10;
+          if (p.y < -10) p.y = height + 10;
+          if (p.y > height + 10) p.y = -10;
+          const alpha = p.alpha * (0.55 + (Math.sin(now + p.phase) + 1) * 0.22);
+          ctx.beginPath();
+          ctx.fillStyle = p.tint ? `rgba(112,234,220,${alpha})` : `rgba(187,158,255,${alpha})`;
+          ctx.shadowColor = p.tint ? "rgba(112,234,220,.45)" : "rgba(187,158,255,.45)";
+          ctx.shadowBlur = p.radius * 5;
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          for (let j = index + 1; j < Math.min(particles.length, index + 5); j += 1) {
+            const q = particles[j];
+            const dx = p.x - q.x;
+            const dy = p.y - q.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 105) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(157,145,216,${(1 - distance / 105) * 0.055})`;
+              ctx.lineWidth = 0.6;
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.stroke();
+            }
+          }
+        });
+        frame = window.requestAnimationFrame(drawParticles);
+      };
+      resizeCanvas();
+      drawParticles();
+      window.addEventListener("resize", resizeCanvas, { passive: true });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden && frame) {
+          window.cancelAnimationFrame(frame);
+          frame = 0;
+        } else if (!document.hidden && !frame) {
+          frame = window.requestAnimationFrame(drawParticles);
+        }
+      });
+    }
+  }
+
+  // SoundCloud playlist: track 1 -> track 2 -> back to track 1.
+  // Autoplay is attempted, but iOS/Safari may require a user gesture.
+  const audioFrame = $("#soundcloud-audio");
   const musicButton = $("#music-toggle");
   const musicLabel = $("#music-label");
-  const musicSubtitle = $("#music-subtitle");
-  const musicHint = $("#music-tooltip");
+  const musicTrackLabel = $("#music-track");
+  const musicTooltip = $("#music-tooltip");
+  const musicConfig = config.music || {};
+  const tracks = (Array.isArray(musicConfig.tracks) ? musicConfig.tracks : [musicConfig.soundcloudTrack])
+    .filter((track) => typeof track === "string" && track.trim())
+    .map((track) => track.trim());
   let widget = null;
   let widgetReady = false;
-  let isPlaying = false;
-  let hintTimer = 0;
-  let firstGestureHandled = false;
-  let currentTrackIndex = 0;
+  let playing = false;
+  let firstGestureTried = false;
+  let trackIndex = 0;
+  let tooltipTimer = 0;
+  let loadSequence = 0;
   let switchingTrack = false;
-  let switchGuardTimer = 0;
-
-  const rawTracks = Array.isArray(config.music?.soundcloudTracks)
-    ? config.music.soundcloudTracks
-    : [config.music?.soundcloudTrack].filter(Boolean);
+  const playlistLoops = musicConfig.loopPlaylist !== false;
+  const musicVolume = Number.isFinite(Number(musicConfig.volume))
+    ? Math.min(100, Math.max(0, Number(musicConfig.volume))) : 26;
 
   const showMusicHint = (message) => {
-    if (!musicHint) return;
-    musicHint.textContent = message;
-    musicHint.classList.add("visible");
-    window.clearTimeout(hintTimer);
-    hintTimer = window.setTimeout(() => musicHint.classList.remove("visible"), 3300);
+    if (!musicTooltip || !message) return;
+    musicTooltip.textContent = message;
+    musicTooltip.classList.add("is-visible");
+    window.clearTimeout(tooltipTimer);
+    tooltipTimer = window.setTimeout(() => musicTooltip.classList.remove("is-visible"), 3400);
   };
-  const setMusicState = (active) => {
-    isPlaying = Boolean(active);
-    musicButton?.classList.toggle("is-playing", isPlaying);
-    musicButton?.setAttribute("aria-pressed", String(isPlaying));
-    musicButton?.setAttribute("aria-label", isPlaying ? "Tạm dừng nhạc nền" : "Bật nhạc nền");
-    if (musicLabel) musicLabel.textContent = "BACKGROUND SOUND";
-    if (musicSubtitle) musicSubtitle.textContent = isPlaying ? "NOW PLAYING" : "TAP TO LISTEN";
+  const setMusicState = (active, hint) => {
+    playing = Boolean(active);
+    musicButton?.classList.toggle("is-playing", playing);
+    musicButton?.setAttribute("aria-pressed", String(playing));
+    musicButton?.setAttribute("aria-label", playing ? "Tạm dừng nhạc nền" : "Bật nhạc nền");
+    if (musicLabel) musicLabel.textContent = playing ? "ĐANG PHÁT" : "NHẠC NỀN";
+    if (hint) showMusicHint(hint);
   };
-  const cleanTrackUrl = (rawUrl) => {
-    const parsed = new URL(rawUrl);
+  const normalizeTrack = (raw) => {
+    const parsed = new URL(raw);
+    if (!/(^|\.)soundcloud\.com$/i.test(parsed.hostname)) {
+      throw new Error("URL không thuộc SoundCloud");
+    }
     parsed.hostname = "soundcloud.com";
     parsed.search = "";
     parsed.hash = "";
     return parsed.toString();
   };
-  const widgetOptions = () => ({
-    auto_play: true,
+  const getTrackUrl = (index) => normalizeTrack(tracks[index]);
+  const updateTrackLabel = () => {
+    if (musicTrackLabel) {
+      musicTrackLabel.textContent = `TRACK ${String(trackIndex + 1).padStart(2, "0")} / ${String(tracks.length).padStart(2, "0")}`;
+    }
+    musicButton?.setAttribute("data-track", String(trackIndex + 1));
+  };
+  const embedOptions = (autoPlay) => ({
+    auto_play: Boolean(autoPlay),
     hide_related: true,
     show_comments: false,
     show_user: false,
@@ -275,107 +298,130 @@
     sharing: false,
     download: false,
     show_artwork: false,
-    color: "#b99aff"
+    color: "#b69aff"
   });
-  const advanceTrack = () => {
-    if (!widget || !widgetReady || rawTracks.length < 2 || switchingTrack) {
-      setMusicState(false);
+  const attemptPlay = () => {
+    if (!widget || !widgetReady) return;
+    try {
+      widget.setVolume(musicVolume);
+      widget.play();
+    } catch (_) {
+      setMusicState(false, "Trình duyệt chưa cho phép phát nhạc. Chạm nút để thử lại nhé.");
+    }
+  };
+  const loadTrack = (nextIndex, shouldPlay = true) => {
+    if (!tracks.length || !audioFrame) return;
+    if (nextIndex >= tracks.length && !playlistLoops) {
+      setMusicState(false, "Playlist đã phát hết.");
+      return;
+    }
+    trackIndex = ((nextIndex % tracks.length) + tracks.length) % tracks.length;
+    updateTrackLabel();
+    const sequence = ++loadSequence;
+    let trackUrl;
+    try {
+      trackUrl = getTrackUrl(trackIndex);
+    } catch (_) {
+      setMusicState(false, "Có link nhạc SoundCloud chưa hợp lệ.");
       return;
     }
 
-    currentTrackIndex = (currentTrackIndex + 1) % rawTracks.length;
-    switchingTrack = true;
-    window.clearTimeout(switchGuardTimer);
-
-    try {
-      // SoundCloud's Widget API loads the next track into the existing hidden player.
-      // Keeping the same widget preserves event listeners and the small music control.
-      widget.load(cleanTrackUrl(rawTracks[currentTrackIndex]), widgetOptions());
-      // PLAY normally clears this guard. The timeout prevents a stuck guard if
-      // SoundCloud takes unusually long or the browser blocks chained playback.
-      switchGuardTimer = window.setTimeout(() => {
+    if (widget && typeof widget.load === "function") {
+      widgetReady = false;
+      try {
+        widget.load(trackUrl, embedOptions(shouldPlay), () => {
+          if (sequence !== loadSequence) return;
+          widgetReady = true;
+          switchingTrack = false;
+          try { widget.setVolume(musicVolume); } catch (_) { /* Volume is non-critical. */ }
+          if (shouldPlay) attemptPlay();
+        });
+      } catch (_) {
+        widgetReady = false;
         switchingTrack = false;
-      }, 10000);
-    } catch (_) {
-      switchingTrack = false;
-      setMusicState(false);
-      showMusicHint("Không thể chuyển bài lúc này. Chạm nút nhạc để thử lại.");
+        setMusicState(false, "Không thể chuyển bài nhạc lúc này.");
+      }
+      return;
     }
+
+    const embed = new URL("https://w.soundcloud.com/player/");
+    embed.search = new URLSearchParams({ url: trackUrl, ...embedOptions(shouldPlay) }).toString();
+    audioFrame.src = embed.toString();
   };
-  const attachSoundCloudWidget = () => {
+  const attachWidget = () => {
     if (!audioFrame || !window.SC?.Widget || widget) return;
     try {
       widget = window.SC.Widget(audioFrame);
       const events = window.SC.Widget.Events;
       widget.bind(events.READY, () => {
         widgetReady = true;
-        const volume = Number(config.music?.volume);
-        try {
-          widget.setVolume(Number.isFinite(volume) ? Math.max(0, Math.min(100, volume)) : 24);
-          widget.play();
-        } catch (_) {
-          showMusicHint("Chạm vào nút nhạc nền để bắt đầu phát.");
+        try { widget.setVolume(musicVolume); } catch (_) { /* Volume is non-critical. */ }
+        if (musicConfig.autoplay !== false) attemptPlay();
+      });
+      widget.bind(events.PLAY, () => setMusicState(true, `Đang phát bài ${trackIndex + 1}/${tracks.length}.`));
+      widget.bind(events.PAUSE, () => setMusicState(false, "Nhạc nền đã tạm dừng."));
+      widget.bind(events.FINISH, () => {
+        // Ignore duplicate FINISH notifications while the next iframe track loads.
+        if (switchingTrack) return;
+        if (tracks.length > 1) {
+          switchingTrack = true;
+          const nextIndex = trackIndex + 1;
+          loadTrack(nextIndex, true);
+          showMusicHint(`Đã chuyển sang bài ${((nextIndex % tracks.length) + tracks.length) % tracks.length + 1}/${tracks.length}.`);
+        } else {
+          setMusicState(false, "Bài nhạc đã kết thúc.");
         }
       });
-      widget.bind(events.PLAY, () => {
-        switchingTrack = false;
-        window.clearTimeout(switchGuardTimer);
-        setMusicState(true);
-      });
-      widget.bind(events.PAUSE, () => setMusicState(false));
-      widget.bind(events.FINISH, advanceTrack);
-      if (events.ERROR) widget.bind(events.ERROR, () => {
-        switchingTrack = false;
-        setMusicState(false);
-        showMusicHint("Không tải được bài nhạc tiếp theo lúc này.");
-      });
+      if (events.ERROR) widget.bind(events.ERROR, () => setMusicState(false, "Không tải được nhạc SoundCloud lúc này."));
     } catch (_) {
-      setMusicState(false);
-      showMusicHint("SoundCloud chưa sẵn sàng.");
+      setMusicState(false, "Không tải được trình phát nhạc nền.");
     }
   };
   const loadSoundCloud = () => {
-    if (!audioFrame || !rawTracks.length || typeof rawTracks[0] !== "string") return;
-    try {
-      const embedUrl = new URL("https://w.soundcloud.com/player/");
-      embedUrl.search = new URLSearchParams({
-        url: cleanTrackUrl(rawTracks[0]),
-        ...Object.fromEntries(Object.entries(widgetOptions()).map(([key, value]) => [key, String(value)]))
-      }).toString();
-      audioFrame.src = embedUrl.toString();
-      if (window.SC?.Widget) {
-        attachSoundCloudWidget();
-      } else {
-        const sdk = document.createElement("script");
-        sdk.src = "https://w.soundcloud.com/player/api.js";
-        sdk.async = true;
-        sdk.onload = attachSoundCloudWidget;
-        sdk.onerror = () => showMusicHint("Nhạc nền không tải được. Các liên kết vẫn hoạt động bình thường.");
-        document.head.append(sdk);
-      }
-    } catch (_) {
-      showMusicHint("Đường dẫn nhạc nền chưa hợp lệ.");
+    if (!audioFrame || !tracks.length) {
+      if (musicButton) musicButton.hidden = true;
+      return;
+    }
+    updateTrackLabel();
+    // Prime the iframe before attaching the official SoundCloud Widget API.
+    loadTrack(0, musicConfig.autoplay !== false);
+    if (window.SC?.Widget) {
+      attachWidget();
+    } else {
+      const sdk = document.createElement("script");
+      sdk.src = "https://w.soundcloud.com/player/api.js";
+      sdk.async = true;
+      sdk.onload = attachWidget;
+      sdk.onerror = () => setMusicState(false, "SoundCloud không tải được. Các liên kết khác vẫn dùng bình thường.");
+      document.head.append(sdk);
     }
   };
+  loadSoundCloud();
+
   const toggleMusic = () => {
     if (!widget || !widgetReady) {
-      showMusicHint("Nhạc nền đang tải. Chạm lại sau một chút nhé.");
+      showToast("Trình phát đang tải. Chạm lại sau một chút nhé.");
       return;
     }
     try {
-      if (isPlaying) widget.pause();
-      else widget.play();
+      if (playing) widget.pause();
+      else attemptPlay();
     } catch (_) {
-      showMusicHint("Trình duyệt chưa cho phép phát nhạc. Hãy chạm lại.");
+      showMusicHint("Trình duyệt chưa cho phép phát nhạc. Chạm lại để thử.");
     }
   };
   musicButton?.addEventListener("click", toggleMusic);
-  document.addEventListener("pointerdown", () => {
-    if (firstGestureHandled) return;
-    firstGestureHandled = true;
-    if (widget && widgetReady && !isPlaying) {
-      try { widget.play(); } catch (_) { /* Browser autoplay policy may still block playback. */ }
-    }
-  }, { once: true, passive: true });
-  loadSoundCloud();
+
+  const unlockAudio = (event) => {
+    // Let the dedicated music button own its click; otherwise the capture-phase
+    // unlock could start playback just before the button's click toggles it.
+    if (event?.target?.closest?.("#music-toggle")) return;
+    if (firstGestureTried || !widget || !widgetReady || playing) return;
+    firstGestureTried = true;
+    attemptPlay();
+    document.removeEventListener("pointerdown", unlockAudio, true);
+    document.removeEventListener("keydown", unlockAudio, true);
+  };
+  document.addEventListener("pointerdown", unlockAudio, true);
+  document.addEventListener("keydown", unlockAudio, true);
 })();
